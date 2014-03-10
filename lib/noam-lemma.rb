@@ -2,12 +2,42 @@ require 'socket'
 require 'json'
 require 'thread'
 
-# Connect and send event with:
-# echo -n '000067["register","spallaId",9000,["event1"],["event1"],"nrduino", "0.2"]000039["event","spallaId","event1","cookies"]' | nc localhost 7733
+# Example usage:
 #
-# Listen for events with:
-#
-# 000039["event","spallaId","event1","cookies"]
+# $lemma = Noam::Lemma.new("my-lemma-name", "ruby-script", 9000, ["event1"], ["event1"])
+# $lemma.start
+# 
+# Thread.new do |t|
+#   loop do
+#     m = $lemma.listen
+# 
+#     if :cancelled == m
+#       puts "Listen done."
+#       break
+#     else
+#       p m
+#     end
+#   end
+# end
+# 
+# Thread.new do |t|
+#   ctr = 0
+#   loop do
+#     unless $lemma.play("event1", "#{ctr} cookies")
+#       puts "Play done."
+#       break
+#     end
+# 
+#     ctr += 1
+#     sleep(1)
+#   end
+# end
+# 
+# sleep(10)
+# 
+# $lemma.stop
+# 
+# sleep(2)
 
 NOAM_SYS_VERSION = '0.2'
 Thread.abort_on_exception=true
@@ -79,19 +109,23 @@ module Noam
     end
 
     def self.discover(net="0.0.0.0")
-      beacon_port = 1030
-
       socket = UDPSocket.new
-      socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
-      socket.bind("0.0.0.0", beacon_port)
+      begin
+        beacon_port = 1030
 
-      wait_time = 10.0
-      if IO.select([socket],[],[],wait_time).nil?
-        raise "Didn't see beacon after #{wait_time} seconds."
-      else
-        data, addr = socket.recvfrom(1600)
-        parsed_data = JSON.parse(data)
-        Beacon.new(parsed_data[1], addr[2], parsed_data[2], 7733)
+        socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
+        socket.bind("0.0.0.0", beacon_port)
+
+        wait_time = 10.0
+        if IO.select([socket],[],[],wait_time).nil?
+          raise "Didn't see beacon after #{wait_time} seconds."
+        else
+          data, addr = socket.recvfrom(1600)
+          parsed_data = JSON.parse(data)
+          Beacon.new(parsed_data[1], addr[2], parsed_data[2], 7733)
+        end
+      ensure
+        socket.close
       end
     end
   end
@@ -108,6 +142,8 @@ module Noam
           end
         rescue NoamThreadCancelled
           # going down
+        ensure
+          @socket.close
         end
       end
     end
@@ -138,7 +174,10 @@ module Noam
             end
           end
         rescue NoamThreadCancelled
+          @cancelled = true
           @queue.push(:cancelled)
+        ensure
+          @server.close
         end
       end
     end
@@ -154,7 +193,7 @@ module Noam
   end
 
   class Lemma
-    attr_reader :listener, :player
+    attr_reader :listener, :player, :name, :hears, :plays
 
     # Initialize a new Lemma instance.
     #
@@ -190,45 +229,10 @@ module Noam
     end
 
     def stop
-      @player.stop
-      @listener.stop
+      @player.stop if @player
+      @listener.stop if @listener
       @player = nil
       @listener = nil
     end
   end
 end
-
-# $lemma = Noam::Lemma.new("my-lemma-name", "ruby-script", 9000, ["event1"], ["event1"])
-# $lemma.start
-# 
-# Thread.new do |t|
-#   loop do
-#     m = $lemma.listen
-# 
-#     if :cancelled == m
-#       puts "Listen done."
-#       break
-#     else
-#       p m
-#     end
-#   end
-# end
-# 
-# Thread.new do |t|
-#   ctr = 0
-#   loop do
-#     unless $lemma.play("event1", "#{ctr} cookies")
-#       puts "Play done."
-#       break
-#     end
-# 
-#     ctr += 1
-#     sleep(1)
-#   end
-# end
-# 
-# sleep(10)
-# 
-# $lemma.stop
-# 
-# sleep(2)
