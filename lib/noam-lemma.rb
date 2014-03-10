@@ -169,8 +169,8 @@ module Noam
       @listener = nil
     end
 
-    def start
-      beacon = Beacon.discover
+    def start(beacon=nil)
+      beacon ||= Beacon.discover
       @listener = Listener.new(@response_port)
       @player = Player.new(beacon.host, beacon.noam_port)
       @player.put(Message::Register.new(@name, @response_port, @hears, @plays, @dev_type))
@@ -198,37 +198,37 @@ module Noam
   end
 end
 
-$lemma = Noam::Lemma.new("my-lemma-name", "ruby-script", 9000, ["event1"], ["event1"])
-$lemma.start
-
-Thread.new do |t|
-  loop do
-    m = $lemma.listen
-
-    if :cancelled == m
-      puts "Listen done."
-      break
-    else
-      p m
-    end
-  end
-end
-
-Thread.new do |t|
-  ctr = 0
-  loop do
-    unless $lemma.play("event1", "#{ctr} cookies")
-      puts "Play done."
-      break
-    end
-
-    ctr += 1
-    sleep(1)
-  end
-end
-
-sleep(10)
-
-$lemma.stop
-
-sleep(2)
+# $lemma = Noam::Lemma.new("my-lemma-name", "ruby-script", 9000, ["event1"], ["event1"])
+# $lemma.start
+# 
+# Thread.new do |t|
+#   loop do
+#     m = $lemma.listen
+# 
+#     if :cancelled == m
+#       puts "Listen done."
+#       break
+#     else
+#       p m
+#     end
+#   end
+# end
+# 
+# Thread.new do |t|
+#   ctr = 0
+#   loop do
+#     unless $lemma.play("event1", "#{ctr} cookies")
+#       puts "Play done."
+#       break
+#     end
+# 
+#     ctr += 1
+#     sleep(1)
+#   end
+# end
+# 
+# sleep(10)
+# 
+# $lemma.stop
+# 
+# sleep(2)
