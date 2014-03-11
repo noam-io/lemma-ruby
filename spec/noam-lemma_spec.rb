@@ -1,26 +1,70 @@
 describe Noam do
   describe Noam::Message::Register do
-    pending
+    describe "#new" do
+      pending
+    end
+
+    describe "#nome_encode" do
+      pending
+    end
   end
   
   describe Noam::Message::Heard do
-    pending
+    describe "#new" do
+      pending
+    end
+
+    describe "::from_nome" do
+      pending
+    end
   end
   
   describe Noam::Message::Playable do
-    pending
+    describe "#new" do
+      pending
+    end
+
+    describe "#nome_encode" do
+      pending
+    end
   end
   
   describe Noam::Beacon do
-    pending
+    describe "#new" do
+      pending
+    end
+
+    describe "::discover" do
+      pending
+    end
   end
   
   describe Noam::Player do
-    pending
+    describe "#new" do
+      pending
+    end
+
+    describe "#put" do
+      pending
+    end
+
+    describe "#stop" do
+      pending
+    end
   end
   
   describe Noam::Listener do
-    pending
+    describe "#new" do
+      pending
+    end
+
+    describe "#take" do
+      pending
+    end
+
+    describe "#stop" do
+      pending
+    end
   end
   
   describe Noam::Lemma do
@@ -75,15 +119,6 @@ describe Noam do
         m.source.should == "test-server"
         m.ident.should == "event1"
         m.value.should =="noam event"
-      end
-    end
-  
-    describe "#listen" do
-      it "receives messages from the server" do
-        @server.send_message(["event", "test-server", "event1", "noam event"])
-        m = @lemma.listen
-        m.ident.should == "event1"
-        m.value.should == "noam event"
       end
     end
 

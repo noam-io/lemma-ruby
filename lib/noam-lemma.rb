@@ -74,10 +74,6 @@ module Noam
         @value = value
       end
 
-      def to_s
-        "<Heard: #{ident}:#{value.to_json} from #{source}>"
-      end
-
       def self.from_nome(nome)
         _, source, ident, value = JSON.parse(nome)
         Heard.new(source, ident, value)
