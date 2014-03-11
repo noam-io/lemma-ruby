@@ -1,41 +1,96 @@
 describe Noam do
+  describe Noam::Message do
+    describe "::encode_length" do
+      it "expands the lengh out to 6 digits" do
+        Noam::Message.encode_length(6).should == "000006"
+        Noam::Message.encode_length(123456).should == "123456"
+      end
+    end
+  end
+
   describe Noam::Message::Register do
     describe "#new" do
-      pending
+      it "creates a new Register object" do
+        Noam::Message::Register.new(
+          :devid, :port, :hears, :plays, :type
+        ).class.should == Noam::Message::Register
+      end
     end
 
     describe "#nome_encode" do
-      pending
+      it "encodes the Register message" do
+        Noam::Message::Register.new(
+          "an_id", 1234, ["e1"], ["e2","e3"], "thingy"
+        ).nome_encode.should == '000059["register","an_id",1234,["e1"],["e2","e3"],"thingy","0.2"]'
+      end
     end
   end
   
   describe Noam::Message::Heard do
     describe "#new" do
-      pending
+      it "creates a new Heard message" do
+        h = Noam::Message::Heard.new("source", "ident", "value")
+        h.source.should == "source"
+        h.ident.should == "ident"
+        h.value.should == "value"
+      end
     end
 
     describe "::from_nome" do
-      pending
+      it "ceates a new Heard message from the nome event structure" do
+        h = Noam::Message::Heard.from_nome(["event", "source", "ident", "value"].to_json)
+        h.source.should == "source"
+        h.ident.should == "ident"
+        h.value.should == "value"
+      end
     end
   end
   
   describe Noam::Message::Playable do
     describe "#new" do
-      pending
+      it "can be built" do
+        Noam::Message::Playable.new(
+          :host,:ident,:value
+        ).class.should == Noam::Message::Playable
+      end
     end
 
     describe "#nome_encode" do
-      pending
+      it "encodes the Playable" do
+        Noam::Message::Playable.new(
+          "host","ident","value"
+        ).nome_encode.should == '000032["event","host","ident","value"]'
+      end
     end
   end
   
   describe Noam::Beacon do
     describe "#new" do
-      pending
+      it "creates a new beacon" do
+        b = Noam::Beacon.new(:name,:host, :http, :noam)
+        b.name.should == :name
+        b.host.should == :host
+        b.http_port.should == :http
+        b.noam_port.should == :noam
+      end
     end
 
     describe "::discover" do
-      pending
+      before do
+        FakeManager.start
+      end
+
+      after do
+        FakeManager.stop
+      end
+
+      it "creats a Beacon based on server beacons" do
+        # test assumes the TestBeacon beacon is running.
+        b = Noam::Beacon.discover
+        b.class.should == Noam::Beacon
+        b.http_port.should == 8081
+        b.noam_port.should == 7733
+      end
     end
   end
   
