@@ -14,7 +14,7 @@ publisher.start
 
 seq = 0
 loop do
-  e = if 0 == (rand() * 100).round % 2
+  e = if 0.5 < rand()
         "e1"
       else
         "e2"
