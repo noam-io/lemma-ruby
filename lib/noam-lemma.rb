@@ -51,6 +51,60 @@ module Noam
       ("%06u" % l)
     end
 
+    class Marco
+      def initialize(room_name, lemma_name, polo_udp_port, dialect)
+        @room_name = room_name
+        @lemma_name = lemma_name
+        @udp_listen_port = polo_udp_port
+        @dialect = dialect
+      end
+
+      def start
+        bcast_socket = UDPSocket.new
+        reply_socket = UDPSocket.new
+        reply_socket.bind("0.0.0.0", @udp_listen_port)
+        begin
+          dest_port = 1030
+          wait_time = 5.0
+
+          bcast_socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
+
+          loop do
+            bcast_socket.send(nome_encode, 0, "255.255.255.255", dest_port)
+            # if IO.select([reply_socket],[],[], wait_time)
+            if IO.select([bcast_socket],[],[], wait_time)
+              # Got a reply on the socket.
+              break
+            end
+          end
+
+          message, sockaddr = bcast_socket.recvfrom(1600)
+          _, _, nome_port = JSON.parse(message)
+          _, _, addr, _ = sockaddr
+
+          Polo.new(addr, nome_port)
+        ensure
+          reply_socket.close
+        end
+      end
+
+      def nome_encode
+        ["marco", @lemma_name, @room_name, @dialect, NOAM_SYS_VERSION].to_json
+      end
+    end
+
+    class Polo
+      attr_reader :host, :port
+
+      class InvalidHost < Exception; end
+      class InvalidPort < Exception; end
+
+      def initialize(host, port)
+        raise InvalidHost.new if (@host = host).nil?
+        raise InvalidPort.new if (@port = port).nil?
+      end
+    end
+
     class Register
       def initialize(device_id, resp_port, hears, plays, dev_type)
         @device_id = device_id
@@ -206,9 +260,14 @@ module Noam
 
     def start(beacon=nil)
       beacon ||= Beacon.discover
-      @listener = Listener.new(@response_port)
-      @player = Player.new(beacon.host, beacon.noam_port)
-      @player.put(Message::Register.new(@name, @response_port, @hears, @plays, @dev_type))
+      begin_operation(beacon.host, beacon.noam_port)
+    end
+
+    def advertise(room_name)
+      m = Noam::Message::Marco.new(room_name, @name, @response_port, "ruby-script")
+      polo = m.start
+
+      begin_operation(polo.host, polo.port)
     end
 
     def play(event, value)
@@ -229,6 +288,15 @@ module Noam
       @listener.stop if @listener
       @player = nil
       @listener = nil
+    end
+
+    private
+
+    def begin_operation(host, port)
+      @listener = Listener.new(@response_port)
+      @player = Player.new(host, port)
+      @player.put(Message::Register.new(
+        @name, @response_port, @hears, @plays, @dev_type))
     end
   end
 end
