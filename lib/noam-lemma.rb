@@ -2,43 +2,6 @@ require 'socket'
 require 'json'
 require 'thread'
 
-# Example usage:
-#
-# $lemma = Noam::Lemma.new("my-lemma-name", "ruby-script", 9000, ["event1"], ["event1"])
-# $lemma.start
-# 
-# Thread.new do |t|
-#   loop do
-#     m = $lemma.listen
-# 
-#     if :cancelled == m
-#       puts "Listen done."
-#       break
-#     else
-#       p m
-#     end
-#   end
-# end
-# 
-# Thread.new do |t|
-#   ctr = 0
-#   loop do
-#     unless $lemma.play("event1", "#{ctr} cookies")
-#       puts "Play done."
-#       break
-#     end
-# 
-#     ctr += 1
-#     sleep(1)
-#   end
-# end
-# 
-# sleep(10)
-# 
-# $lemma.stop
-# 
-# sleep(2)
-
 NOAM_SYS_VERSION = '0.2'
 Thread.abort_on_exception=true
 
