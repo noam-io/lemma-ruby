@@ -34,9 +34,9 @@ module Noam
 
           loop do
             bcast_socket.send(nome_encode, 0, "255.255.255.255", dest_port)
-            # if IO.select([reply_socket],[],[], wait_time)
             if IO.select([bcast_socket],[],[], wait_time)
-              # Got a reply on the socket.
+              # Got a reply on the socket. Break out of the loop and process
+              # the reply.
               break
             end
           end
