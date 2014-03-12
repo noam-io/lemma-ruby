@@ -6,7 +6,7 @@ require 'noam-lemma'
 # connection from the Lemma.
 
 publisher = Noam::Lemma.new(
-  'example-publisher',
+  'example-guest-publisher',
   'ruby-script',
   9000,
   [],

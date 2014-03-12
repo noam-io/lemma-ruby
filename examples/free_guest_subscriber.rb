@@ -5,8 +5,8 @@ require 'noam-lemma'
 # the local network and only begin subscribing to messages once a server
 # requests a connection from the Lemma.
 
-publisher = Noam::Lemma.new(
-  'example-publisher',
+subscriber = Noam::Lemma.new(
+  'example-guest-subscriber',
   'ruby-script',
   9000,
   ["e3"],
@@ -17,7 +17,7 @@ publisher = Noam::Lemma.new(
 #
 # The "local-test" parameter is the room name. Servers with a room name that's
 # the same as the Lemma's advertised room name will connect automatically.
-publisher.advertise("local-test")
+subscriber.advertise("local-test")
 
 loop do
   # The `listen` method will return an Event object once one is received by the
