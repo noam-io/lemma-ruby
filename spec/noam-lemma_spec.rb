@@ -130,7 +130,7 @@ describe Noam do
       @lemma = Noam::Lemma.new(
         "my-lemma-name", "ruby-script", 9000,
         ["event1"], ["event1"])
-      @lemma.start
+      @lemma.discover
       sleep(0.1) # give things enough time to pass the message
     end
     

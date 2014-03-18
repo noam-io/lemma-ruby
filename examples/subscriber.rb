@@ -17,11 +17,11 @@ subscriber = Noam::Lemma.new(
   ["e1","e2"],
   [])
 
-# Using the `start` method asks the Lemma to proactively try and discover a
+# Using the `discover` method asks the Lemma to proactively try and discover a
 # server to connect to on the local network. Once the server is discovered, it
-# will connect and send a Nome 'register' message. When `start` returns, the
+# will connect and send a Nome 'register' message. When `discover` returns, the
 # Lemma is ready to receive events.
-subscriber.start
+subscriber.discover
 
 loop do
   # The `listen` method will return an Event object once one is received by the

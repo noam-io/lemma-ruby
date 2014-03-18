@@ -15,7 +15,7 @@ module Noam
       @listener = nil
     end
 
-    def start(beacon=nil)
+    def discover(beacon=nil)
       beacon ||= Beacon.discover
       begin_operation(beacon.host, beacon.noam_port)
     end
