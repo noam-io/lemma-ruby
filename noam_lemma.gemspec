@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = NoamLemma::VERSION
   spec.authors       = ["John Van Enk"]
   spec.email         = ["vanenkj@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{A lemma factory for the Noam pub-sub system.}
+  spec.summary       = %q{A lemma factory for the Noam pub-sub system.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
