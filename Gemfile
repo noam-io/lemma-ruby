@@ -1,6 +1,4 @@
-# A sample Gemfile
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "rspec"
-gem "mocha"
-gem "require_all"
+# Specify your gem's dependencies in noam_lemma.gemspec
+gemspec

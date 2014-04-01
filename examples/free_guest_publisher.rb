@@ -1,4 +1,4 @@
-require 'noam-lemma'
+require 'noam_lemma'
 
 # This is an example of a Ruby Lemma that publishes message and *also* uses the
 # "Guest" model of connection. This Lemma will advertise that it's available on

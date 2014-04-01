@@ -5,8 +5,8 @@ module Noam
   class NoamThreadCancelled < Exception; end
 end
 
-require 'noam-lemma/beacon'
-require 'noam-lemma/lemma'
-require 'noam-lemma/listener'
-require 'noam-lemma/message'
-require 'noam-lemma/player'
+require 'noam_lemma/beacon'
+require 'noam_lemma/lemma'
+require 'noam_lemma/listener'
+require 'noam_lemma/message'
+require 'noam_lemma/player'

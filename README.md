@@ -1,4 +1,4 @@
-noam-lemma-ruby
+noam\_lemma
 ===============
 
 A Noam Lemma implementation for Ruby.

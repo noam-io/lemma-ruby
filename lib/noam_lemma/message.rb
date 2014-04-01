@@ -6,8 +6,8 @@ module Noam
   end
 end
 
-require 'noam-lemma/message/heard'
-require 'noam-lemma/message/marco'
-require 'noam-lemma/message/playable'
-require 'noam-lemma/message/polo'
-require 'noam-lemma/message/register'
+require 'noam_lemma/message/heard'
+require 'noam_lemma/message/marco'
+require 'noam_lemma/message/playable'
+require 'noam_lemma/message/polo'
+require 'noam_lemma/message/register'

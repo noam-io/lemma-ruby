@@ -1,4 +1,4 @@
-require 'noam-lemma'
+require 'noam_lemma'
 
 # This is an example of a Ruby Lemma that subscribes to messages. It expects a
 # Nome server to be running. It also expects that the nome-lemma.rb file is in
