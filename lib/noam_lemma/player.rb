@@ -1,9 +1,15 @@
 require 'thread' 
 
 module Noam
+  class NoamPlayerException < Exception; end
   class Player
     def initialize(con_host,con_port)
-      @socket = TCPSocket.new(con_host, con_port)
+      begin
+        @socket = TCPSocket.new(con_host, con_port)
+      rescue Errno::ECONNREFUSED
+        raise NoamPlayerException.new("Unable to connect to the Noam server at #{con_host}:#{con_port}. Is it running?")
+      end
+
       @queue = Queue.new
       @thread = Thread.new do |t|
         begin
