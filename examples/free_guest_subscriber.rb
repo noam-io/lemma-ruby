@@ -17,7 +17,7 @@ subscriber = Noam::Lemma.new(
 #
 # The "local-test" parameter is the room name. Servers with a room name that's
 # the same as the Lemma's advertised room name will connect automatically.
-subscriber.advertise("local-test")
+subscriber.advertise("")
 
 loop do
   # The `listen` method will return an Event object once one is received by the

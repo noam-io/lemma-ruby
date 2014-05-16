@@ -17,7 +17,7 @@ publisher = Noam::Lemma.new(
 #
 # The "local-test" parameter is the room name. Servers with a room name that's
 # the same as the Lemma's advertised room name will connect automatically.
-publisher.advertise("local-test")
+publisher.advertise("")
 
 seq = 0
 e = "e3"
