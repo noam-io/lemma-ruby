@@ -25,7 +25,7 @@ describe Noam do
       end
     end
   end
-  
+
   describe Noam::Message::Heard do
     describe "#new" do
       it "creates a new Heard message" do
@@ -45,7 +45,7 @@ describe Noam do
       end
     end
   end
-  
+
   describe Noam::Message::Playable do
     describe "#new" do
       it "can be built" do
@@ -63,7 +63,7 @@ describe Noam do
       end
     end
   end
-  
+
   describe Noam::Beacon do
     describe "#new" do
       it "creates a new beacon" do
@@ -93,35 +93,7 @@ describe Noam do
       end
     end
   end
-  
-  describe Noam::Player do
-    describe "#new" do
-      pending
-    end
 
-    describe "#put" do
-      pending
-    end
-
-    describe "#stop" do
-      pending
-    end
-  end
-  
-  describe Noam::Listener do
-    describe "#new" do
-      pending
-    end
-
-    describe "#take" do
-      pending
-    end
-
-    describe "#stop" do
-      pending
-    end
-  end
-  
   describe Noam::Lemma do
     before do
       FakeManager.start
@@ -133,7 +105,7 @@ describe Noam do
       @lemma.discover
       sleep(0.1) # give things enough time to pass the message
     end
-    
+
     after do
       @lemma.stop
       FakeManager.stop
