@@ -1,5 +1,5 @@
 NOAM_SYS_VERSION = '0.2'
-Thread.abort_on_exception=true
+Thread.abort_on_exception = true
 
 module Noam
   class NoamThreadCancelled < Exception; end

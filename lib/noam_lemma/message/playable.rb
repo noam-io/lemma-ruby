@@ -7,7 +7,7 @@ module Noam
         @value = value
       end
 
-      def nome_encode
+      def noam_encode
         j = ['event', @host_id, @ident, @value].to_json
         Noam::Message.encode_length(j.length) + j
       end

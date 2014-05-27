@@ -9,7 +9,7 @@ module Noam
         @dev_type = dev_type
       end
 
-      def nome_encode
+      def noam_encode
         j = ["register", @device_id, @resp_port.to_i, @hears, @plays, @dev_type, NOAM_SYS_VERSION].to_json
         Noam::Message.encode_length(j.length) + j
       end

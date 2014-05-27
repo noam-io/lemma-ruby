@@ -8,8 +8,8 @@ module Noam
         @value = value
       end
 
-      def self.from_nome(nome)
-        _, source, ident, value = JSON.parse(nome)
+      def self.from_noam(noam)
+        _, source, ident, value = JSON.parse(noam)
         Heard.new(source, ident, value)
       end
     end

@@ -1,7 +1,7 @@
 describe Noam do
   describe Noam::Message do
     describe "::encode_length" do
-      it "expands the lengh out to 6 digits" do
+      it "expands the length out to 6 digits" do
         Noam::Message.encode_length(6).should == "000006"
         Noam::Message.encode_length(123456).should == "123456"
       end
@@ -17,11 +17,11 @@ describe Noam do
       end
     end
 
-    describe "#nome_encode" do
+    describe "#noam_encode" do
       it "encodes the Register message" do
         Noam::Message::Register.new(
           "an_id", 1234, ["e1"], ["e2","e3"], "thingy"
-        ).nome_encode.should == '000059["register","an_id",1234,["e1"],["e2","e3"],"thingy","0.2"]'
+        ).noam_encode.should == '000059["register","an_id",1234,["e1"],["e2","e3"],"thingy","'+NOAM_SYS_VERSION+'"]'
       end
     end
   end
@@ -36,9 +36,9 @@ describe Noam do
       end
     end
 
-    describe "::from_nome" do
-      it "ceates a new Heard message from the nome event structure" do
-        h = Noam::Message::Heard.from_nome(["event", "source", "ident", "value"].to_json)
+    describe "::from_noam" do
+      it "ceates a new Heard message from the noam event structure" do
+        h = Noam::Message::Heard.from_noam(["event", "source", "ident", "value"].to_json)
         h.source.should == "source"
         h.ident.should == "ident"
         h.value.should == "value"
@@ -55,11 +55,11 @@ describe Noam do
       end
     end
 
-    describe "#nome_encode" do
+    describe "#noam_encode" do
       it "encodes the Playable" do
         Noam::Message::Playable.new(
           "host","ident","value"
-        ).nome_encode.should == '000032["event","host","ident","value"]'
+        ).noam_encode.should == '000032["event","host","ident","value"]'
       end
     end
   end

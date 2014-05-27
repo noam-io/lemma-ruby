@@ -13,7 +13,7 @@ module Noam
               len = client.read(6).to_i
               data = client.read(len)
 
-              @queue.push(Message::Heard.from_nome(data))
+              @queue.push(Message::Heard.from_noam(data))
             end
           end
         rescue NoamThreadCancelled

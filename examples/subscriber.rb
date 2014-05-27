@@ -1,13 +1,13 @@
 require 'noam_lemma'
 
 # This is an example of a Ruby Lemma that subscribes to messages. It expects a
-# Nome server to be running. It also expects that the nome-lemma.rb file is in
+# Noam server to be running. It also expects that the noam-lemma.rb file is in
 # the search path. If you run this example from the project root, the following
 # command should work:
 #
 #   ruby -Ilib example/subscriber.rb
 #
-# This example _will not_ work on the same machine running the Nome server as
+# This example _will not_ work on the same machine running the Noam server as
 # both programs need to bind to UDP port 1030.
 
 subscriber = Noam::Lemma.new(
@@ -19,7 +19,7 @@ subscriber = Noam::Lemma.new(
 
 # Using the `discover` method asks the Lemma to proactively try and discover a
 # server to connect to on the local network. Once the server is discovered, it
-# will connect and send a Nome 'register' message. When `discover` returns, the
+# will connect and send a Noam 'register' message. When `discover` returns, the
 # Lemma is ready to receive events.
 subscriber.discover
 

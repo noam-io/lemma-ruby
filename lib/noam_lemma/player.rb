@@ -14,7 +14,7 @@ module Noam
       @thread = Thread.new do |t|
         begin
           loop do
-            @socket.print(@queue.pop.nome_encode)
+            @socket.print(@queue.pop.noam_encode)
             @socket.flush
           end
         rescue NoamThreadCancelled

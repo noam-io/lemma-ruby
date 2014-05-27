@@ -2,8 +2,6 @@ module Noam
   class Lemma
     attr_reader :listener, :player, :name, :hears, :plays
 
-    # Initialize a new Lemma instance.
-    #
     def initialize(name, dev_type, response_port, hears, plays)
       @name = name
       @dev_type = dev_type

@@ -22,7 +22,7 @@ module Noam
           bcast_socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
 
           loop do
-            bcast_socket.send(nome_encode, 0, "255.255.255.255", dest_port)
+            bcast_socket.send(noam_encode, 0, "255.255.255.255", dest_port)
             if IO.select([bcast_socket],[],[], wait_time)
               # Got a reply on the socket. Break out of the loop and process
               # the reply.
@@ -31,16 +31,16 @@ module Noam
           end
 
           message, sockaddr = bcast_socket.recvfrom(1600)
-          _, _, nome_port = JSON.parse(message)
+          _, _, noam_port = JSON.parse(message)
           _, _, addr, _ = sockaddr
 
-          Polo.new(addr, nome_port)
+          Polo.new(addr, noam_port)
         ensure
           reply_socket.close
         end
       end
 
-      def nome_encode
+      def noam_encode
         ["marco", @lemma_name, @room_name, @dialect, NOAM_SYS_VERSION].to_json
       end
     end
