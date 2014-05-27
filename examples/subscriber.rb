@@ -14,7 +14,7 @@ subscriber = Noam::Lemma.new(
   'example-subscriber',
   'ruby-script',
   9001,
-  ["e1","e2"],
+  ["e1", "e2"],
   [])
 
 # Using the `discover` method asks the Lemma to proactively try and discover a

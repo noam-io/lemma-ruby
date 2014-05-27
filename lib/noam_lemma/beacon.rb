@@ -9,25 +9,29 @@ module Noam
       @noam_port = noam_port
     end
 
-    def self.discover(net="0.0.0.0")
+    def self.discover(net = "0.0.0.0")
       socket = UDPSocket.new
       begin
-        beacon_port = 1030
-
         socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
-        socket.bind("0.0.0.0", beacon_port)
+        socket.bind("0.0.0.0", Noam::BEACON_PORT)
 
-        wait_time = 10.0
-        if IO.select([socket],[],[],wait_time).nil?
-          raise "Didn't see beacon after #{wait_time} seconds."
-        else
-          data, addr = socket.recvfrom(1600)
-          parsed_data = JSON.parse(data)
-          Beacon.new(parsed_data[1], addr[2], parsed_data[2], 7733)
-        end
+        raise "Didn't see beacon after #{WAIT_TIME} seconds." unless message_received?(socket)
+
+        data, addr = socket.recvfrom(MAX_RESPONSE_LENGTH)
+        parsed_data = JSON.parse(data)
+        Beacon.new(parsed_data[1], addr[2], parsed_data[2], Noam::SERVER_PORT)
       ensure
         socket.close
       end
+    end
+
+    private
+
+    MAX_RESPONSE_LENGTH = 1600
+    WAIT_TIME = 10.0
+
+    def self.message_received?(socket)
+      IO.select([socket], [], [], WAIT_TIME) != nil
     end
   end
 end

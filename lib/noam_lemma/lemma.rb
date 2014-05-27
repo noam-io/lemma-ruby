@@ -13,23 +13,15 @@ module Noam
       @listener = nil
     end
 
-    def discover(beacon=nil)
+    def discover(beacon = nil)
       beacon ||= Beacon.discover
       start(beacon.host, beacon.noam_port)
     end
 
     def advertise(room_name)
-      m = Noam::Message::Marco.new(room_name, @name, @response_port, "ruby-script")
-      polo = m.start
-
+      marco = Noam::Message::Marco.new(room_name, @name, @response_port, "ruby-script")
+      polo = marco.start
       start(polo.host, polo.port)
-    end
-
-    def start(host, port)
-      @listener = Listener.new(@response_port)
-      @player = Player.new(host, port)
-      @player.put(Message::Register.new(
-        @name, @response_port, @hears, @plays, @dev_type))
     end
 
     def play(event, value)
@@ -50,6 +42,14 @@ module Noam
       @listener.stop if @listener
       @player = nil
       @listener = nil
+    end
+
+    private
+
+    def start(host, port)
+      @listener = Listener.new(@response_port)
+      @player = Player.new(host, port)
+      @player.put(Message::Register.new(@name, @response_port, @hears, @plays, @dev_type))
     end
   end
 end

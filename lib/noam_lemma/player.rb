@@ -3,11 +3,11 @@ require 'thread'
 module Noam
   class NoamPlayerException < Exception; end
   class Player
-    def initialize(con_host,con_port)
+    def initialize(remote_host, remote_port)
       begin
-        @socket = TCPSocket.new(con_host, con_port)
+        @socket = TCPSocket.new(remote_host, remote_port)
       rescue Errno::ECONNREFUSED
-        raise NoamPlayerException.new("Unable to connect to the Noam server at #{con_host}:#{con_port}. Is it running?")
+        raise NoamPlayerException.new("Unable to connect to the Noam server at #{remote_host}:#{remote_port}. Is it running?")
       end
 
       @queue = Queue.new
@@ -25,8 +25,8 @@ module Noam
       end
     end
 
-    def put(o)
-      @queue.push(o)
+    def put(message)
+      @queue.push(message)
     end
 
     def stop

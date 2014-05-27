@@ -2,6 +2,7 @@ module Noam
   module Message
     class Heard
       attr_reader :source, :ident, :value
+
       def initialize(source, ident, value)
         @source = source
         @ident = ident

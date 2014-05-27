@@ -2,6 +2,9 @@ NOAM_SYS_VERSION = '0.2'
 Thread.abort_on_exception = true
 
 module Noam
+  BEACON_PORT = 1030
+  SERVER_PORT = 7733
+
   class NoamThreadCancelled < Exception; end
 end
 

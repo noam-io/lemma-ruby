@@ -15,7 +15,7 @@ publisher = Noam::Lemma.new(
   'ruby-script',
   9000,
   [],
-  ["e1","e2"])
+  ["e1", "e2"])
 
 # Using the `discover` method asks the Lemma to proactively try and discover a
 # server to connect to on the local network. Once the server is discovered, it

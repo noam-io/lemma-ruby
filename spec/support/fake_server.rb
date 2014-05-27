@@ -9,6 +9,8 @@ class UnexpectedSystemVersion < Exception; end
 
 module NoamTest
   class FakeBeacon
+    LOOP_DELAY = 0.001
+
     def initialize(udp_broadcast_port)
       @socket = UDPSocket.new
       @socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
@@ -18,12 +20,12 @@ module NoamTest
       @thread = Thread.new do |t|
         begin
           loop do
-            msg = ["beacon", "fake_beacon", 8081].to_json
-            @socket.send(msg, 0, "255.255.255.255", FAKE_BEACON_PORT)
+            msg = ["beacon", "fake_beacon", FAKE_HTTP_PORT].to_json
+            @socket.send(msg, 0, "255.255.255.255", Noam::BEACON_PORT)
 
             # This is normally at 5.0 seconds, but we run faster in order to
             # make tests faster.
-            sleep(0.1)
+            sleep(LOOP_DELAY)
           end
         rescue FakeBeaconThreadCancelled
           # going down
@@ -42,7 +44,7 @@ module NoamTest
 
   class FakeServer
     def initialize(tcp_listen_port)
-      @sock = TCPServer.new(FAKE_TCP_SERVER_PORT)
+      @sock = TCPServer.new(Noam::SERVER_PORT)
     end
 
     def start
@@ -77,8 +79,8 @@ module NoamTest
       @clients.reject {|c| c.closed}
     end
 
-    def msgs
-      clients.map {|c| c.msgs}.flatten(1)
+    def messages
+      clients.map {|c| c.messages}.flatten(1)
     end
 
     def send_message(m)
@@ -141,7 +143,7 @@ module NoamTest
       @thread.join
     end
 
-    def msgs
+    def messages
       @queue.length.times.map { @queue.pop }
     end
 
