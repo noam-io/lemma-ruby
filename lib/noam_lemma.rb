@@ -1,4 +1,4 @@
-NOAM_SYS_VERSION = '0.2'
+NOAM_SYS_VERSION = '0.2.1'
 Thread.abort_on_exception = true
 
 module Noam
