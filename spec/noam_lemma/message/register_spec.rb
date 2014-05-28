@@ -2,7 +2,7 @@ describe Noam::Message::Register do
   describe "#new" do
     it "creates a new Register object" do
       Noam::Message::Register.new(
-        :devid, :port, :hears, :plays, :type
+        :devid, :port, :hears, :speaks, :type
       ).class.should == Noam::Message::Register
     end
   end

@@ -18,7 +18,7 @@ describe Noam::Lemma do
     it "initailizes things" do
       @lemma.name.should  == "my-lemma-name"
       @lemma.hears.should == ["event1"]
-      @lemma.plays.should == ["event1"]
+      @lemma.speaks.should == ["event1"]
     end
   end
 
@@ -34,9 +34,9 @@ describe Noam::Lemma do
     end
   end
 
-  describe "#play" do
+  describe "#speak" do
     it "sends an event to the server" do
-      @lemma.play("an event", "some value")
+      @lemma.speak("an event", "some value")
       sleep(SERVER_DELAY)
       @server.messages.map{|m| m[2]}.include?("an event").should be_true
     end

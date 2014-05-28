@@ -1,13 +1,13 @@
 module Noam
   class Lemma
-    attr_reader :listener, :player, :name, :hears, :plays
+    attr_reader :name, :listener, :player, :hears, :speaks
 
-    def initialize(name, dev_type, response_port, hears, plays)
+    def initialize(name, dev_type, response_port, hears, speaks)
       @name = name
       @dev_type = dev_type
       @response_port = response_port
       @hears = hears
-      @plays = plays
+      @speaks = speaks
 
       @player = nil
       @listener = nil
@@ -24,7 +24,7 @@ module Noam
       start(polo.host, polo.port)
     end
 
-    def play(event, value)
+    def speak(event, value)
       if @player
         @player.put(Noam::Message::Playable.new(@name, event, value))
         true
@@ -49,7 +49,7 @@ module Noam
     def start(host, port)
       @listener = Listener.new(@response_port)
       @player = Player.new(host, port)
-      @player.put(Message::Register.new(@name, @response_port, @hears, @plays, @dev_type))
+      @player.put(Message::Register.new(@name, @response_port, @hears, @speaks, @dev_type))
     end
   end
 end
