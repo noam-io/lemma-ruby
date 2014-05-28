@@ -47,7 +47,7 @@ describe Noam::Lemma do
       @server.send_message(["event", "test-server", "event1", "noam event"])
       message = @lemma.listen
       message.source.should == "test-server"
-      message.ident.should  == "event1"
+      message.event.should  == "event1"
       message.value.should  == "noam event"
     end
   end

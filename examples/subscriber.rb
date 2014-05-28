@@ -35,7 +35,7 @@ loop do
     puts "Done"
     break
   else
-    puts "Read: #{m.ident} -> #{m.value.inspect}"
+    puts "Read: #{m.event} -> #{m.value.inspect}"
   end
 end
 
