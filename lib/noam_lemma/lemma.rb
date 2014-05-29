@@ -2,9 +2,8 @@ module Noam
   class Lemma
     attr_reader :name, :listener, :player, :hears, :speaks
 
-    def initialize(name, dev_type, response_port, hears, speaks)
+    def initialize(name, response_port, hears, speaks)
       @name = name
-      @dev_type = dev_type
       @response_port = response_port
       @hears = hears
       @speaks = speaks
@@ -19,7 +18,7 @@ module Noam
     end
 
     def advertise(room_name)
-      marco = Noam::Message::Marco.new(room_name, @name, @response_port, "ruby-script")
+      marco = Noam::Message::Marco.new(room_name, @name, @response_port)
       polo = marco.start
       start(polo.host, polo.port)
     end
@@ -49,7 +48,7 @@ module Noam
     def start(host, port)
       @listener = Listener.new(@response_port)
       @player = Player.new(host, port)
-      @player.put(Message::Register.new(@name, @response_port, @hears, @speaks, @dev_type))
+      @player.put(Message::Register.new(@name, @response_port, @hears, @speaks))
     end
   end
 end

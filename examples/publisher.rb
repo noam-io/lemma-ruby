@@ -12,7 +12,6 @@ require 'noam_lemma'
 
 publisher = Noam::Lemma.new(
   'example-publisher',
-  'ruby-script',
   9000,
   [],
   ["e1", "e2"])

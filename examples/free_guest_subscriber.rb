@@ -7,7 +7,6 @@ require 'noam_lemma'
 
 subscriber = Noam::Lemma.new(
   'example-guest-subscriber',
-  'ruby-script',
   9000,
   ["e3"],
   [])

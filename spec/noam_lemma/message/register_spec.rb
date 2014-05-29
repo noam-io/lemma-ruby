@@ -1,17 +1,17 @@
 describe Noam::Message::Register do
   describe "#new" do
     it "creates a new Register object" do
-      Noam::Message::Register.new(
-        :devid, :port, :hears, :speaks, :type
-      ).class.should == Noam::Message::Register
+      message = Noam::Message::Register.new(:devid, :port, :hears, :speaks)
+      message.should be_a(Noam::Message::Register)
     end
   end
 
   describe "#noam_encode" do
     it "encodes the Register message" do
-      Noam::Message::Register.new(
-        "an_id", 1234, ["e1"], ["e2", "e3"], "thingy"
-      ).noam_encode.should == '000061["register","an_id",1234,["e1"],["e2","e3"],"thingy","'+NOAM_SYS_VERSION+'"]'
+      message = Noam::Message::Register.new("an_id", 1234, ["e1"], ["e2", "e3"]).noam_encode
+      expected = '000066["register","an_id",1234,["e1"],["e2","e3"],"' +
+        Noam::DEVICE_TYPE + '","' + Noam::VERSION + '"]'
+      message.should == expected
     end
   end
 end

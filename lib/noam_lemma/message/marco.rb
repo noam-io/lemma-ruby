@@ -4,11 +4,10 @@ require 'json'
 module Noam
   module Message
     class Marco
-      def initialize(room_name, lemma_name, polo_udp_port, dialect)
+      def initialize(room_name, lemma_name, polo_udp_port)
         @room_name = room_name
         @lemma_name = lemma_name
         @udp_listen_port = polo_udp_port
-        @dialect = dialect
       end
 
       def start
@@ -32,7 +31,7 @@ module Noam
       end
 
       def noam_encode
-        ["marco", @lemma_name, @room_name, @dialect, NOAM_SYS_VERSION].to_json
+        ["marco", @lemma_name, @room_name, Noam::DEVICE_TYPE, Noam::VERSION].to_json
       end
 
       private

@@ -4,7 +4,7 @@ describe Noam::Lemma do
   before do
     FakeManager.start
     @server = FakeManager.server
-    @lemma = Noam::Lemma.new("my-lemma-name", "ruby-script", 9000, ["event1"], ["event1"])
+    @lemma = Noam::Lemma.new("my-lemma-name", 9000, ["event1"], ["event1"])
     @lemma.discover
     sleep(SERVER_DELAY)
   end

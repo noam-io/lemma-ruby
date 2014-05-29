@@ -96,7 +96,7 @@ module NoamTest
   end
 
   class Client
-    attr_reader :closed, :responder, :resp_port, :hears, :speaks, :dev_id
+    attr_reader :closed, :responder, :resp_port, :hears, :speaks
 
     def initialize(client_socket)
       @sock = client_socket
@@ -156,13 +156,13 @@ module NoamTest
     def read_register_msg
        len = @sock.read(6)
        m = JSON.parse(@sock.read(len.to_i))
-       txt, @dev_id, @resp_port, @hears, @speaks, @dev_type, ver = m
+       txt, _, @resp_port, @hears, @speaks, _, ver = m
 
        unless txt == "register"
          raise UnexpectedRegisterText.new(txt)
        end
 
-       unless ver == NOAM_SYS_VERSION
+       unless ver == Noam::VERSION
          raise UnexpectedSystemVersion.new(ver)
        end
     end

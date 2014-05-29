@@ -7,7 +7,6 @@ require 'noam_lemma'
 
 publisher = Noam::Lemma.new(
   'example-guest-publisher',
-  'ruby-script',
   9000,
   [],
   ["e3"])

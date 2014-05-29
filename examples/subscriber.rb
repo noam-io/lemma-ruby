@@ -12,7 +12,6 @@ require 'noam_lemma'
 
 subscriber = Noam::Lemma.new(
   'example-subscriber',
-  'ruby-script',
   9001,
   ["e1", "e2"],
   [])
@@ -38,4 +37,3 @@ loop do
     puts "Read: #{m.event} -> #{m.value.inspect}"
   end
 end
-
