@@ -1,14 +1,16 @@
+require "noam_lemma/message_filter"
+
 module Noam
   class Lemma
-    attr_reader :name, :listener, :player, :hears, :speaks
+    attr_reader :name, :listener, :player, :speaks
 
-    def initialize(name, hears, speaks)
+    def initialize(name, hears = [], speaks = [])
       @name = name
-      @hears = hears
       @speaks = speaks
-
       @player = nil
       @listener = nil
+
+      initialize_message_filter(hears)
     end
 
     def discover(beacon = nil)
@@ -42,12 +44,27 @@ module Noam
       @listener = nil
     end
 
+    def hears
+      @message_filter.hears
+    end
+
+    def set_message_filter(message_filter)
+      @message_filter = message_filter
+    end
+
     private
 
     def start(host, port)
       @listener = Listener.new
       @player = Player.new(host, port)
-      @player.put(Message::Register.new(@name, @listener.port, @hears, @speaks))
+      @player.put(Message::Register.new(@name, @listener.port, @message_filter.hears, @speaks))
+    end
+
+    def initialize_message_filter(hears)
+      @message_filter = MessageFilter.new
+      hears.each do |event_name|
+        @message_filter.hear(event_name) {}
+      end
     end
   end
 end

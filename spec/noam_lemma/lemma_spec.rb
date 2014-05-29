@@ -1,10 +1,10 @@
 describe Noam::Lemma do
-  SERVER_DELAY = 0.005
+  SERVER_DELAY = 0.05
 
-  before do
+  before(:each) do
     FakeManager.start
     @server = FakeManager.server
-    @lemma = Noam::Lemma.new("my-lemma-name", ["event1"], ["event1"])
+    @lemma = Noam::Lemma.new("Example Lemma", ["event1"], ["event1"])
     @lemma.discover
     sleep(SERVER_DELAY)
   end
@@ -15,10 +15,43 @@ describe Noam::Lemma do
   end
 
   describe "#new" do
-    it "initailizes things" do
-      @lemma.name.should  == "my-lemma-name"
-      @lemma.hears.should == ["event1"]
-      @lemma.speaks.should == ["event1"]
+    context "with provided arguments" do
+      let(:lemma) { Noam::Lemma.new("Example Lemma", ["event1"], ["event1"]) }
+
+      it "sets #name to the given name" do
+        lemma.name.should  == "Example Lemma"
+      end
+
+      it "sets #hears to the given hears" do
+        lemma.hears.should == ["event1"]
+      end
+
+      it "sets #speaks to the given speaks" do
+        lemma.speaks.should == ["event1"]
+      end
+    end
+
+    context "with default arguments" do
+      let(:lemma) { Noam::Lemma.new("Example Lemma") }
+
+      it "sets #hears to an empty array" do
+        lemma.hears.should == []
+      end
+
+      it "sets #speaks to an empty array" do
+        lemma.speaks.should == []
+      end
+    end
+  end
+
+  describe "#hears" do
+    let(:lemma) { Noam::Lemma.new("Example Lemma", ["example_event"]) }
+
+    it "delegates to the MessageFilter when set" do
+      message_filter = Noam::MessageFilter.new
+      message_filter.hear("sample_event") {}
+      lemma.set_message_filter(message_filter)
+      lemma.hears.should == message_filter.hears
     end
   end
 
