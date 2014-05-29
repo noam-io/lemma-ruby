@@ -2,9 +2,13 @@ require 'thread'
 
 module Noam
   class Listener
-    def initialize(port)
+    attr_reader :port
+
+    def initialize
       @queue = Queue.new
-      @server = TCPServer.new(port)
+      @server = TCPServer.new(0)
+      @port = @server.addr[1]
+
       @thread = Thread.new do |t|
         begin
           loop do

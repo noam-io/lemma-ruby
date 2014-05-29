@@ -4,16 +4,18 @@ require 'json'
 module Noam
   module Message
     class Marco
-      def initialize(room_name, lemma_name, polo_udp_port)
+      attr_reader :port
+
+      def initialize(room_name, lemma_name)
         @room_name = room_name
         @lemma_name = lemma_name
-        @udp_listen_port = polo_udp_port
       end
 
       def start
         bcast_socket = UDPSocket.new
         reply_socket = UDPSocket.new
-        reply_socket.bind("0.0.0.0", @udp_listen_port)
+        reply_socket.bind("0.0.0.0", 0)
+
         begin
           bcast_socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
 

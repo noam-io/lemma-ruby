@@ -96,7 +96,7 @@ module NoamTest
   end
 
   class Client
-    attr_reader :closed, :responder, :resp_port, :hears, :speaks
+    attr_reader :closed, :responder, :port, :hears, :speaks
 
     def initialize(client_socket)
       @sock = client_socket
@@ -108,7 +108,7 @@ module NoamTest
       @thread = Thread.new do |t|
         begin
           read_register_msg
-          @responder = ClientResponder.new(@client_host, @resp_port)
+          @responder = ClientResponder.new(@client_host, @port)
 
           loop do
             # Ignoring bad message.
@@ -156,7 +156,7 @@ module NoamTest
     def read_register_msg
        len = @sock.read(6)
        m = JSON.parse(@sock.read(len.to_i))
-       txt, _, @resp_port, @hears, @speaks, _, ver = m
+       txt, _, @port, @hears, @speaks, _, ver = m
 
        unless txt == "register"
          raise UnexpectedRegisterText.new(txt)

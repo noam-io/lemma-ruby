@@ -5,11 +5,7 @@ require 'noam_lemma'
 # the local network and only begin speaking messages once a server requests a
 # connection from the Lemma.
 
-publisher = Noam::Lemma.new(
-  'example-guest-publisher',
-  9000,
-  [],
-  ["e3"])
+publisher = Noam::Lemma.new('example-guest-publisher', [], ["e3"])
 
 # Using the `advertise` method asks the Lemma to announce it's presence and
 # wait for a message from a server that may want to connect to it.

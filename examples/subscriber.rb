@@ -10,11 +10,7 @@ require 'noam_lemma'
 # This example _will not_ work on the same machine running the Noam server as
 # both programs need to bind to UDP port 1030.
 
-subscriber = Noam::Lemma.new(
-  'example-subscriber',
-  9001,
-  ["e1", "e2"],
-  [])
+subscriber = Noam::Lemma.new('example-subscriber', ["e1", "e2"], [])
 
 # Using the `discover` method asks the Lemma to proactively try and discover a
 # server to connect to on the local network. Once the server is discovered, it

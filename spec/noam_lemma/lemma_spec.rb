@@ -1,10 +1,10 @@
 describe Noam::Lemma do
-  SERVER_DELAY = 0.001
+  SERVER_DELAY = 0.005
 
   before do
     FakeManager.start
     @server = FakeManager.server
-    @lemma = Noam::Lemma.new("my-lemma-name", 9000, ["event1"], ["event1"])
+    @lemma = Noam::Lemma.new("my-lemma-name", ["event1"], ["event1"])
     @lemma.discover
     sleep(SERVER_DELAY)
   end
@@ -25,7 +25,8 @@ describe Noam::Lemma do
   describe "#discover" do
     it "sends a registration message" do
       @server.clients.length.should == 1
-      @server.clients.first.resp_port.should == 9000
+      @server.clients.first.port.should be_an(Integer)
+      @server.clients.first.port.should_not == 0
     end
 
     it "initializes listener and player" do
