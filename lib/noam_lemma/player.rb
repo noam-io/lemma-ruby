@@ -2,6 +2,7 @@ require 'thread'
 
 module Noam
   class NoamPlayerException < Exception; end
+
   class Player
     def initialize(remote_host, remote_port)
       begin
@@ -11,18 +12,7 @@ module Noam
       end
 
       @queue = Queue.new
-      @thread = Thread.new do |t|
-        begin
-          loop do
-            @socket.print(@queue.pop.noam_encode)
-            @socket.flush
-          end
-        rescue NoamThreadCancelled
-          # going down
-        ensure
-          @socket.close
-        end
-      end
+      manage_queue_on_thread
     end
 
     def put(message)
@@ -30,8 +20,59 @@ module Noam
     end
 
     def stop
-      @thread.raise(NoamThreadCancelled)
+      put(:soft_exit)
       @thread.join
+    end
+
+    def stop!
+      put(:hard_exit)
+      @thread.join
+    end
+
+    private
+
+    def manage_queue_on_thread
+      @thread = Thread.new do |t|
+        begin
+          loop do
+            message = @queue.pop
+            break if exit?(message)
+            process(message)
+          end
+        ensure
+          @socket.close
+        end
+      end
+    end
+
+    def process(message)
+      case message
+      when :soft_exit
+        finish_queue
+      when :hard_exit
+      else
+        @socket.print(message.noam_encode)
+        @socket.flush
+      end
+    end
+
+    def exit?(message)
+      message == :hard_exit || message == :soft_exit
+    end
+
+    def finish_queue
+      queue_to_array.each do |message|
+        @socket.print(message.noam_encode)
+        @socket.flush
+      end
+    end
+
+    def queue_to_array
+      result = []
+      while(@queue.size > 0) do
+        result << @queue.pop
+      end
+      result
     end
   end
 end
