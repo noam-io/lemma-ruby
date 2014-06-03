@@ -15,7 +15,7 @@ module Noam
 
     def discover(beacon = nil)
       beacon ||= Beacon.discover
-      start(beacon.host, beacon.noam_port)
+      start(beacon.host, beacon.port)
     end
 
     def advertise(room_name)

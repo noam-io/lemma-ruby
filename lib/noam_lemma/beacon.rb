@@ -1,12 +1,11 @@
 module Noam
   class Beacon
-    attr_reader :name, :host, :noam_port, :http_port
+    attr_reader :name, :host, :port
 
-    def initialize(name, host, http_port, noam_port)
+    def initialize(name, host, port)
       @name = name
       @host = host
-      @http_port = http_port
-      @noam_port = noam_port
+      @port = port
     end
 
     def self.discover(net = "0.0.0.0")
@@ -19,7 +18,7 @@ module Noam
 
         data, addr = socket.recvfrom(MAX_RESPONSE_LENGTH)
         parsed_data = JSON.parse(data)
-        Beacon.new(parsed_data[1], addr[2], parsed_data[2], Noam::SERVER_PORT)
+        Beacon.new(parsed_data[1], addr[2], Noam::SERVER_PORT)
       ensure
         socket.close
       end
