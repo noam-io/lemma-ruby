@@ -20,7 +20,7 @@ module NoamTest
       @thread = Thread.new do |t|
         begin
           loop do
-            msg = ["beacon", "fake_beacon", FAKE_HTTP_PORT].to_json
+            msg = ["beacon", "fake_beacon", NoamTest::FakeServer::PORT].to_json
             @socket.send(msg, 0, "255.255.255.255", Noam::BEACON_PORT)
 
             # This is normally at 5.0 seconds, but we run faster in order to
@@ -43,8 +43,10 @@ module NoamTest
   end
 
   class FakeServer
-    def initialize(tcp_listen_port)
-      @sock = TCPServer.new(Noam::SERVER_PORT)
+    PORT = 7733
+
+    def initialize
+      @sock = TCPServer.new(FakeServer::PORT)
     end
 
     def start

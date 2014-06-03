@@ -2,7 +2,6 @@ Thread.abort_on_exception = true
 
 module Noam
   BEACON_PORT = 1030
-  SERVER_PORT = 7733
 
   VERSION = '0.2.1'
   DEVICE_TYPE = 'ruby-script'

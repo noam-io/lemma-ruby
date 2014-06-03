@@ -12,13 +12,13 @@ module Noam
       socket = UDPSocket.new
       begin
         socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
-        socket.bind("0.0.0.0", Noam::BEACON_PORT)
+        socket.bind(net, Noam::BEACON_PORT)
 
         raise "Didn't see beacon after #{WAIT_TIME} seconds." unless message_received?(socket)
 
         data, addr = socket.recvfrom(MAX_RESPONSE_LENGTH)
         parsed_data = JSON.parse(data)
-        Beacon.new(parsed_data[1], addr[2], Noam::SERVER_PORT)
+        Beacon.new(parsed_data[1], addr[2], parsed_data[2])
       ensure
         socket.close
       end

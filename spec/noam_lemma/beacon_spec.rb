@@ -19,8 +19,8 @@ describe Noam::Beacon do
 
     it "creates a Beacon based on server beacons" do
       beacon = Noam::Beacon.discover
-      beacon.class.should == Noam::Beacon
-      beacon.port.should == Noam::SERVER_PORT
+      beacon.should be_a(Noam::Beacon)
+      beacon.port.should == NoamTest::FakeServer::PORT
     end
   end
 end
