@@ -9,3 +9,5 @@ desc "perform verification tests"
 task :verify do
   Noam::LemmaVerification.run
 end
+
+task :default => :spec
