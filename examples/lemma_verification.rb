@@ -2,42 +2,103 @@ require "noam_lemma"
 
 class Noam::LemmaVerification
   def self.run
-    echo
-    plus_one
-    sum
-    name
+    VerifyUsingReturns.run
+    VerifyUsingBlocks.run
   end
 
-  def self.echo
-    lemma = Noam::Lemma.new("verification", ["Echo"], ["EchoVerify"])
-    lemma.advertise("lemma_verification")
-    event = lemma.listen
-    lemma.speak("EchoVerify", event.value)
-    lemma.stop
+  class VerifyUsingReturns
+    def self.run
+      echo
+      plus_one
+      sum
+      name
+    end
+
+    def self.echo
+      lemma = Noam::Lemma.new("verification", ["Echo"], ["EchoVerify"])
+      verify(lemma) do |event|
+        lemma.speak("EchoVerify", event.value)
+      end
+    end
+
+    def self.plus_one
+      lemma = Noam::Lemma.new("verification", ["PlusOne"], ["PlusOneVerify"])
+      verify(lemma) do |event|
+        lemma.speak("PlusOneVerify", event.value + 1)
+      end
+    end
+
+    def self.sum
+      lemma = Noam::Lemma.new("verification", ["Sum"], ["SumVerify"])
+      verify(lemma) do |event|
+        lemma.speak("SumVerify", event.value.inject {|sum, v| sum + v})
+      end
+    end
+
+    def self.name
+      lemma = Noam::Lemma.new("verification", ["Name"], ["NameVerify"])
+      verify(lemma) do |event|
+        fullname = "#{event.value["firstName"]} #{event.value["lastName"]}"
+        lemma.speak("NameVerify", {fullName: fullname})
+      end
+    end
+
+    private
+
+    def self.verify(lemma, &block)
+      lemma.advertise("lemma_verification")
+      yield lemma.listen
+      lemma.stop
+    end
   end
 
-  def self.plus_one
-    lemma = Noam::Lemma.new("verification", ["PlusOne"], ["PlusOneVerify"])
-    lemma.advertise("lemma_verification")
-    event = lemma.listen
-    lemma.speak("PlusOneVerify", event.value + 1)
-    lemma.stop
-  end
+  class VerifyUsingBlocks
+    def self.run
+      echo
+      plus_one
+      sum
+      name
+    end
 
-  def self.sum
-    lemma = Noam::Lemma.new("verification", ["Sum"], ["SumVerify"])
-    lemma.advertise("lemma_verification")
-    event = lemma.listen
-    lemma.speak("SumVerify", event.value.inject {|sum, v| sum + v})
-    lemma.stop
-  end
+    def self.echo
+      lemma = Noam::Lemma.new("verification")
+      lemma.hear("Echo") do |event|
+        lemma.speak("EchoVerify", event.value)
+      end
+      verify(lemma)
+    end
 
-  def self.name
-    lemma = Noam::Lemma.new("verification", ["Name"], ["NameVerify"])
-    lemma.advertise("lemma_verification")
-    event = lemma.listen
-    fullname = "#{event.value["firstName"]} #{event.value["lastName"]}"
-    lemma.speak("NameVerify", {fullName: fullname})
-    lemma.stop
+    def self.plus_one
+      lemma = Noam::Lemma.new("verification")
+      lemma.hear("PlusOne") do |event|
+        lemma.speak("PlusOneVerify", event.value + 1)
+      end
+      verify(lemma)
+    end
+
+    def self.sum
+      lemma = Noam::Lemma.new("verification")
+      lemma.hear("Sum") do |event|
+        lemma.speak("SumVerify", event.value.inject {|sum, v| sum + v})
+      end
+      verify(lemma)
+    end
+
+    def self.name
+      lemma = Noam::Lemma.new("verification")
+      lemma.hear("Name") do |event|
+        fullname = "#{event.value["firstName"]} #{event.value["lastName"]}"
+        lemma.speak("NameVerify", {fullName: fullname})
+      end
+      verify(lemma)
+    end
+
+    private
+
+    def self.verify(lemma)
+      lemma.advertise("lemma_verification")
+      lemma.listen
+      lemma.stop
+    end
   end
 end

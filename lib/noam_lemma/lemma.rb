@@ -24,6 +24,10 @@ module Noam
       start(polo.host, polo.port)
     end
 
+    def hear(event_name, &block)
+      @message_filter.hear(event_name, &block)
+    end
+
     def speak(event, value)
       if @player
         @player.put(Noam::Message::Playable.new(@name, event, value))
@@ -34,7 +38,7 @@ module Noam
     end
 
     def listen
-      @listener.take
+      @message_filter.receive(@listener.take)
     end
 
     def stop
@@ -46,10 +50,6 @@ module Noam
 
     def hears
       @message_filter.hears
-    end
-
-    def set_message_filter(message_filter)
-      @message_filter = message_filter
     end
 
     private

@@ -1,33 +1,20 @@
 describe Noam::Lemma do
   SERVER_DELAY = 0.05
 
-  before(:each) do
-    FakeManager.start
-    @server = FakeManager.server
-    @lemma = Noam::Lemma.new("Example Lemma", ["event1"], ["event1"])
-    @lemma.discover
-    sleep(SERVER_DELAY)
-  end
-
-  after do
-    @lemma.stop
-    FakeManager.stop
-  end
-
   describe "#new" do
     context "with provided arguments" do
-      let(:lemma) { Noam::Lemma.new("Example Lemma", ["event1"], ["event1"]) }
+      let(:lemma) { Noam::Lemma.new("Example Lemma", ["example_event"], ["sample_event"]) }
 
       it "sets #name to the given name" do
         lemma.name.should  == "Example Lemma"
       end
 
       it "sets #hears to the given hears" do
-        lemma.hears.should == ["event1"]
+        lemma.hears.should == ["example_event"]
       end
 
       it "sets #speaks to the given speaks" do
-        lemma.speaks.should == ["event1"]
+        lemma.speaks.should == ["sample_event"]
       end
     end
 
@@ -45,44 +32,86 @@ describe Noam::Lemma do
   end
 
   describe "#hears" do
-    let(:lemma) { Noam::Lemma.new("Example Lemma", ["example_event"]) }
+    let(:lemma) { Noam::Lemma.new("Example Lemma") }
 
-    it "delegates to the MessageFilter when set" do
-      message_filter = Noam::MessageFilter.new
-      message_filter.hear("sample_event") {}
-      lemma.set_message_filter(message_filter)
-      lemma.hears.should == message_filter.hears
+    it "is all messages hearable to the Lemma" do
+      lemma.hear("example_event") {}
+      lemma.hear("sample_event") {}
+      lemma.hears.should == ["example_event", "sample_event"]
+    end
+
+    it "does not contain duplicate messages" do
+      lemma.hear("example_event") {}
+      lemma.hear("example_event") {}
+      lemma.hears.should == ["example_event"]
     end
   end
 
-  describe "#discover" do
-    it "sends a registration message" do
-      @server.clients.length.should == 1
-      @server.clients.first.port.should be_an(Integer)
-      @server.clients.first.port.should_not == 0
-    end
+  context "with server communication" do
+    let(:server)  { FakeManager.server }
 
-    it "initializes listener and player" do
-      @lemma.listener.should_not be_nil
-      @lemma.player.should_not be_nil
-    end
-  end
-
-  describe "#speak" do
-    it "sends an event to the server" do
-      @lemma.speak("an event", "some value")
+    before(:each) do
+      FakeManager.start
+      lemma.discover
       sleep(SERVER_DELAY)
-      @server.messages.map{|m| m[2]}.include?("an event").should be_true
     end
-  end
 
-  describe "#listen" do
-    it "returns a message from the server" do
-      @server.send_message(["event", "test-server", "event1", "noam event"])
-      message = @lemma.listen
-      message.source.should == "test-server"
-      message.event.should  == "event1"
-      message.value.should  == "noam event"
+    after(:each) do
+      lemma.stop
+      FakeManager.stop
+    end
+
+    describe "#discover" do
+      let(:lemma) { Noam::Lemma.new("Example Lemma") }
+
+      it "sends a registration message" do
+        server.clients.length.should == 1
+        server.clients.first.port.should be_an(Integer)
+        server.clients.first.port.should_not == 0
+      end
+
+      it "initializes listener and player" do
+        lemma.listener.should_not be_nil
+        lemma.player.should_not be_nil
+      end
+    end
+
+    describe "#hear" do
+      let(:lemma) { Noam::Lemma.new("Example Lemma") }
+
+      it "registers messages with blocks" do
+        message = nil
+        lemma.hear("example_event") {|event| message = event}
+        send_message_from_server("example_event")
+        lemma.listen
+        message.event.should == "example_event"
+      end
+    end
+
+    describe "#speak" do
+      let(:lemma) { Noam::Lemma.new("Example Lemma") }
+
+      it "sends a message to the server" do
+        lemma.speak("an event", "some value")
+        sleep(SERVER_DELAY)
+        server.messages.map {|m| m[2]}.include?("an event").should be_true
+      end
+    end
+
+    describe "#listen" do
+      let(:lemma) { Noam::Lemma.new("Example Lemma", ["example_event"]) }
+
+      it "returns a message from the server" do
+        send_message_from_server("example_event")
+        message = lemma.listen
+        message.source.should == "test-server"
+        message.event.should  == "example_event"
+        message.value.should  == "noam event"
+      end
+    end
+
+    def send_message_from_server(source = "test-server", value = "noam event", message)
+      server.send_message(["event", source, message, value])
     end
   end
 end
