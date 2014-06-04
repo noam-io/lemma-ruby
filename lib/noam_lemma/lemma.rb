@@ -1,40 +1,34 @@
+require "noam_lemma/message_filter"
+
 module Noam
   class Lemma
-    attr_reader :listener, :player, :name, :hears, :plays
+    attr_reader :name, :listener, :player, :speaks
 
-    # Initialize a new Lemma instance.
-    #
-    def initialize(name, dev_type, response_port, hears, plays)
+    def initialize(name, hears = [], speaks = [])
       @name = name
-      @dev_type = dev_type
-      @response_port = response_port
-      @hears = hears
-      @plays = plays
-
+      @speaks = speaks
       @player = nil
       @listener = nil
+
+      initialize_message_filter(hears)
     end
 
-    def discover(beacon=nil)
+    def discover(beacon = nil)
       beacon ||= Beacon.discover
-      start(beacon.host, beacon.noam_port)
+      start(beacon.host, beacon.port)
     end
 
     def advertise(room_name)
-      m = Noam::Message::Marco.new(room_name, @name, @response_port, "ruby-script")
-      polo = m.start
-
+      marco = Noam::Message::Marco.new(room_name, @name)
+      polo = marco.start
       start(polo.host, polo.port)
     end
 
-    def start(host, port)
-      @listener = Listener.new(@response_port)
-      @player = Player.new(host, port)
-      @player.put(Message::Register.new(
-        @name, @response_port, @hears, @plays, @dev_type))
+    def hear(event_name, &block)
+      @message_filter.hear(event_name, &block)
     end
 
-    def play(event, value)
+    def speak(event, value)
       if @player
         @player.put(Noam::Message::Playable.new(@name, event, value))
         true
@@ -44,7 +38,7 @@ module Noam
     end
 
     def listen
-      @listener.take
+      @message_filter.receive(@listener.take)
     end
 
     def stop
@@ -52,6 +46,25 @@ module Noam
       @listener.stop if @listener
       @player = nil
       @listener = nil
+    end
+
+    def hears
+      @message_filter.hears
+    end
+
+    private
+
+    def start(host, port)
+      @listener = Listener.new
+      @player = Player.new(host, port)
+      @player.put(Message::Register.new(@name, @listener.port, @message_filter.hears, @speaks))
+    end
+
+    def initialize_message_filter(hears)
+      @message_filter = MessageFilter.new
+      hears.each do |event_name|
+        @message_filter.hear(event_name) {}
+      end
     end
   end
 end

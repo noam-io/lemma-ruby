@@ -2,27 +2,14 @@ require 'thread'
 
 module Noam
   class Listener
-    def initialize(port)
-      @queue = Queue.new
-      @server = TCPServer.new(port)
-      @thread = Thread.new do |t|
-        begin
-          loop do
-            client = @server.accept
-            loop do
-              len = client.read(6).to_i
-              data = client.read(len)
+    attr_reader :port
 
-              @queue.push(Message::Heard.from_nome(data))
-            end
-          end
-        rescue NoamThreadCancelled
-          @cancelled = true
-          @queue.push(:cancelled)
-        ensure
-          @server.close
-        end
-      end
+    def initialize
+      @queue = Queue.new
+      @server = TCPServer.new(0)
+      @port = @server.addr[1]
+
+      manage_queue_on_thread
     end
 
     def take
@@ -30,8 +17,57 @@ module Noam
     end
 
     def stop
-      @thread.raise(NoamThreadCancelled)
+      @exit_requested = true
       @thread.join
+    end
+
+    private
+
+    def manage_queue_on_thread
+      @thread = Thread.new do |t|
+        begin
+          loop_listen
+        ensure
+          @server.close
+        end
+      end
+    end
+
+    def loop_listen
+      loop do
+        if client = listen_for_connection
+          read_from_client(client)
+          client.close
+        end
+
+        if exiting?
+          @queue.push(:cancelled)
+          break
+        end
+      end
+    end
+
+    def listen_for_connection
+      timeout_sec = 0.1
+      available_ios = select([@server], nil, nil, timeout_sec)
+      @server.accept if available_ios
+    end
+
+    def read_from_client(client)
+      begin
+        loop do
+          message_length = client.read_nonblock(Message::MESSAGE_LENGTH_STRING_SIZE).to_i
+          message_content = client.read_nonblock(message_length)
+          @queue.push(Message::Heard.from_noam(message_content))
+          break if exiting?
+        end
+      rescue IO::WaitReadable
+        retry unless exiting?
+      end
+    end
+
+    def exiting?
+      return @exit_requested
     end
   end
 end

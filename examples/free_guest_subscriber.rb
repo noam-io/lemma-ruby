@@ -5,12 +5,7 @@ require 'noam_lemma'
 # the local network and only begin subscribing to messages once a server
 # requests a connection from the Lemma.
 
-subscriber = Noam::Lemma.new(
-  'example-guest-subscriber',
-  'ruby-script',
-  9000,
-  ["e3"],
-  [])
+subscriber = Noam::Lemma.new('example-guest-subscriber', ["e3"], [])
 
 # Using the `advertise` method asks the Lemma to announce it's presence and
 # wait for a message from a server that may want to connect to it.
@@ -31,6 +26,6 @@ loop do
     puts "Done"
     break
   else
-    puts "Read: #{m.ident} -> #{m.value.inspect}"
+    puts "Read: #{m.event} -> #{m.value.inspect}"
   end
 end

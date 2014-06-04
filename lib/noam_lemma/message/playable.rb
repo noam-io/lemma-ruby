@@ -1,14 +1,14 @@
 module Noam
   module Message
     class Playable
-      def initialize(host_id, ident, value)
+      def initialize(host_id, event, value)
         @host_id = host_id
-        @ident = ident
+        @event = event
         @value = value
       end
 
-      def nome_encode
-        j = ['event', @host_id, @ident, @value].to_json
+      def noam_encode
+        j = ['event', @host_id, @event, @value].to_json
         Noam::Message.encode_length(j.length) + j
       end
     end

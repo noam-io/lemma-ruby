@@ -1,16 +1,15 @@
 module Noam
   module Message
     class Register
-      def initialize(device_id, resp_port, hears, plays, dev_type)
+      def initialize(device_id, port, hears, speaks)
         @device_id = device_id
-        @resp_port = resp_port
+        @port = port
         @hears = hears
-        @plays = plays
-        @dev_type = dev_type
+        @speaks = speaks
       end
 
-      def nome_encode
-        j = ["register", @device_id, @resp_port.to_i, @hears, @plays, @dev_type, NOAM_SYS_VERSION].to_json
+      def noam_encode
+        j = ["register", @device_id, @port.to_i, @hears, @speaks, Noam::DEVICE_TYPE, Noam::VERSION].to_json
         Noam::Message.encode_length(j.length) + j
       end
     end

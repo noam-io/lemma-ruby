@@ -9,6 +9,8 @@ class UnexpectedSystemVersion < Exception; end
 
 module NoamTest
   class FakeBeacon
+    LOOP_DELAY = 0.001
+
     def initialize(udp_broadcast_port)
       @socket = UDPSocket.new
       @socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
@@ -18,12 +20,12 @@ module NoamTest
       @thread = Thread.new do |t|
         begin
           loop do
-            msg = ["beacon", "fake_beacon", 8081].to_json
-            @socket.send(msg, 0, "255.255.255.255", FAKE_BEACON_PORT)
+            msg = ["beacon", "fake_beacon", NoamTest::FakeServer::PORT].to_json
+            @socket.send(msg, 0, "255.255.255.255", Noam::BEACON_PORT)
 
             # This is normally at 5.0 seconds, but we run faster in order to
             # make tests faster.
-            sleep(0.1)
+            sleep(LOOP_DELAY)
           end
         rescue FakeBeaconThreadCancelled
           # going down
@@ -41,8 +43,10 @@ module NoamTest
   end
 
   class FakeServer
-    def initialize(tcp_listen_port)
-      @sock = TCPServer.new(FAKE_TCP_SERVER_PORT)
+    PORT = 7733
+
+    def initialize
+      @sock = TCPServer.new(FakeServer::PORT)
     end
 
     def start
@@ -77,8 +81,8 @@ module NoamTest
       @clients.reject {|c| c.closed}
     end
 
-    def msgs
-      clients.map {|c| c.msgs}.flatten(1)
+    def messages
+      clients.map {|c| c.messages}.flatten(1)
     end
 
     def send_message(m)
@@ -94,7 +98,7 @@ module NoamTest
   end
 
   class Client
-    attr_reader :closed, :responder, :resp_port, :hears, :plays, :dev_id
+    attr_reader :closed, :responder, :port, :hears, :speaks
 
     def initialize(client_socket)
       @sock = client_socket
@@ -106,7 +110,7 @@ module NoamTest
       @thread = Thread.new do |t|
         begin
           read_register_msg
-          @responder = ClientResponder.new(@client_host, @resp_port)
+          @responder = ClientResponder.new(@client_host, @port)
 
           loop do
             # Ignoring bad message.
@@ -141,7 +145,7 @@ module NoamTest
       @thread.join
     end
 
-    def msgs
+    def messages
       @queue.length.times.map { @queue.pop }
     end
 
@@ -154,13 +158,13 @@ module NoamTest
     def read_register_msg
        len = @sock.read(6)
        m = JSON.parse(@sock.read(len.to_i))
-       txt, @dev_id, @resp_port, @hears, @plays, @dev_type, ver = m
+       txt, _, @port, @hears, @speaks, _, ver = m
 
        unless txt == "register"
          raise UnexpectedRegisterText.new(txt)
        end
 
-       unless ver == NOAM_SYS_VERSION
+       unless ver == Noam::VERSION
          raise UnexpectedSystemVersion.new(ver)
        end
     end

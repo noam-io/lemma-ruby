@@ -1,5 +1,7 @@
 module Noam
   module Message
+    MESSAGE_LENGTH_STRING_SIZE = 6
+
     def self.encode_length(l)
       ("%06u" % l)
     end
