@@ -1,5 +1,5 @@
 describe Noam::Lemma do
-  SERVER_DELAY = 0.05
+  SERVER_DELAY = 0.075
 
   describe "#new" do
     context "with provided arguments" do
