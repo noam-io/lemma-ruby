@@ -2,103 +2,89 @@ require "noam_lemma"
 
 class Noam::LemmaVerification
   def self.run
-    VerifyUsingReturns.run
-    VerifyUsingBlocks.run
+    VerifyUsingReturns.new.run
+    VerifyUsingBlocks.new.run
   end
 
-  class VerifyUsingReturns
-    def self.run
-      echo
-      plus_one
-      sum
-      name
-    end
+  class VerifyTemplate
+    attr_reader :lemma
 
-    def self.echo
-      lemma = Noam::Lemma.new("verification", ["Echo"], ["EchoVerify"])
-      verify(lemma) do |event|
-        lemma.speak("EchoVerify", event.value)
-      end
-    end
-
-    def self.plus_one
-      lemma = Noam::Lemma.new("verification", ["PlusOne"], ["PlusOneVerify"])
-      verify(lemma) do |event|
-        lemma.speak("PlusOneVerify", event.value + 1)
-      end
-    end
-
-    def self.sum
-      lemma = Noam::Lemma.new("verification", ["Sum"], ["SumVerify"])
-      verify(lemma) do |event|
-        lemma.speak("SumVerify", event.value.inject {|sum, v| sum + v})
-      end
-    end
-
-    def self.name
-      lemma = Noam::Lemma.new("verification", ["Name"], ["NameVerify"])
-      verify(lemma) do |event|
-        fullname = "#{event.value["firstName"]} #{event.value["lastName"]}"
-        lemma.speak("NameVerify", {fullName: fullname})
-      end
+    def run
+      lemma.advertise("lemma_verification")
+      verify
+      lemma.stop
     end
 
     private
 
-    def self.verify(lemma, &block)
-      lemma.advertise("lemma_verification")
-      yield lemma.listen
-      lemma.stop
+    def echo(event)
+      lemma.speak("EchoVerify", event.value)
+    end
+
+    def plus_one(event)
+      lemma.speak("PlusOneVerify", event.value + 1)
+    end
+
+    def sum(event)
+      lemma.speak("SumVerify", event.value.inject {|sum, v| sum + v})
+    end
+
+    def name(event)
+      fullname = "#{event.value["firstName"]} #{event.value["lastName"]}"
+      lemma.speak("NameVerify", {fullName: fullname})
+    end
+
+    def events
+      ["Echo", "PlusOne", "Sum", "Name"]
+    end
+
+    def speaks
+      ["EchoVerify", "PlusOneVerify", "SumVerify", "NameVerify"]
     end
   end
 
-  class VerifyUsingBlocks
-    def self.run
-      echo
-      plus_one
-      sum
-      name
-    end
-
-    def self.echo
-      lemma = Noam::Lemma.new("verification")
-      lemma.hear("Echo") do |event|
-        lemma.speak("EchoVerify", event.value)
-      end
-      verify(lemma)
-    end
-
-    def self.plus_one
-      lemma = Noam::Lemma.new("verification")
-      lemma.hear("PlusOne") do |event|
-        lemma.speak("PlusOneVerify", event.value + 1)
-      end
-      verify(lemma)
-    end
-
-    def self.sum
-      lemma = Noam::Lemma.new("verification")
-      lemma.hear("Sum") do |event|
-        lemma.speak("SumVerify", event.value.inject {|sum, v| sum + v})
-      end
-      verify(lemma)
-    end
-
-    def self.name
-      lemma = Noam::Lemma.new("verification")
-      lemma.hear("Name") do |event|
-        fullname = "#{event.value["firstName"]} #{event.value["lastName"]}"
-        lemma.speak("NameVerify", {fullName: fullname})
-      end
-      verify(lemma)
+  class VerifyUsingReturns < VerifyTemplate
+    def initialize
+      @lemma ||= Noam::Lemma.new("verification", events, speaks)
     end
 
     private
 
-    def self.verify(lemma)
-      lemma.advertise("lemma_verification")
-      lemma.listen
-      lemma.stop
+    def verify
+      events.length.times { handle_event(lemma.listen) }
+    end
+
+    def handle_event(event)
+      case event.event
+      when "Echo"
+        echo(event)
+      when "PlusOne"
+        plus_one(event)
+      when "Sum"
+        sum(event)
+      when "Name"
+        name(event)
+      end
+    end
+  end
+
+  class VerifyUsingBlocks < VerifyTemplate
+    def initialize
+      @lemma = Noam::Lemma.new("verification")
+      prepare_lemma
+    end
+
+    private
+
+    def prepare_lemma
+      lemma.hear("Echo")    {|event| echo(event)}
+      lemma.hear("PlusOne") {|event| plus_one(event)}
+      lemma.hear("Sum")     {|event| sum(event)}
+      lemma.hear("Name")    {|event| name(event)}
+    end
+
+    def verify
+      events.length.times { lemma.listen }
     end
   end
 end
