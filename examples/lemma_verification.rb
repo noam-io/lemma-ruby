@@ -88,3 +88,5 @@ class Noam::LemmaVerification
     end
   end
 end
+
+Noam::LemmaVerification.run

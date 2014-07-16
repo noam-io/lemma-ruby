@@ -2,17 +2,15 @@ require 'noam_lemma'
 
 # This is an example of a Ruby Lemma that publishes message and *also* uses the
 # "Guest" model of connection. This Lemma will advertise that it's available on
-# the local network and only begin speaking messages once a server requests a
-# connection from the Lemma.
+# the local network, without a specified room, and will only begin speaking
+# messages once a server requests a connection from the Lemma.
 
 publisher = Noam::Lemma.new('example-guest-publisher', [], ["e3"])
 
-# Using the `advertise` method asks the Lemma to announce it's presence and
+# Using the `discover` method asks the Lemma to announce it's presence and
 # wait for a message from a server that may want to connect to it.
-#
-# The "local-test" parameter is the room name. Servers with a room name that's
-# the same as the Lemma's advertised room name will connect automatically.
-publisher.advertise("")
+
+publisher.discover
 
 seq = 0
 e = "e3"

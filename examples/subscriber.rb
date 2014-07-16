@@ -12,11 +12,11 @@ require 'noam_lemma'
 
 subscriber = Noam::Lemma.new('example-subscriber', ["e1", "e2"], [])
 
-# Using the `discover` method asks the Lemma to proactively try and discover a
+# Using the `advertise` method asks the Lemma to proactively try and discover a
 # server to connect to on the local network. Once the server is discovered, it
 # will connect and send a Noam 'register' message. When `discover` returns, the
 # Lemma is ready to receive events.
-subscriber.discover
+subscriber.advertise("local-test")
 
 loop do
   # The `listen` method will return an Event object once one is received by the

@@ -40,8 +40,8 @@ describe Noam::MessageFilter do
       filter.hear("example_event") {|message| example_received = true}
       filter.hear("sample_event") {|message| sample_received = true}
       filter.receive(stub_message("example_event"))
-      example_received.should be_true
-      sample_received.should be_false
+      example_received.should be_truthy
+      sample_received.should be_falsy
     end
 
     it "returns the given message" do

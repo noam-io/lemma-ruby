@@ -13,23 +13,17 @@ module Noam
 
       def start
         bcast_socket = UDPSocket.new
-        reply_socket = UDPSocket.new
-        reply_socket.bind("0.0.0.0", 0)
 
-        begin
-          bcast_socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
+        bcast_socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
 
-          loop do
-            bcast_socket.send(noam_encode, 0, "255.255.255.255", Noam::BEACON_PORT)
-            if message_received?(bcast_socket)
-              break
-            end
+        loop do
+          bcast_socket.send(noam_encode, 0, "255.255.255.255", Noam::BEACON_PORT)
+          if message_received?(bcast_socket)
+            break
           end
-
-          get_polo_response(bcast_socket)
-        ensure
-          reply_socket.close
         end
+
+        get_polo_response(bcast_socket)
       end
 
       def noam_encode

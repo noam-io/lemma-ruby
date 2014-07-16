@@ -13,15 +13,14 @@ module Noam
       initialize_message_filter(hears)
     end
 
-    def discover(beacon = nil)
-      beacon ||= Beacon.discover
-      start(beacon.host, beacon.port)
-    end
-
     def advertise(room_name)
       marco = Noam::Message::Marco.new(room_name, @name)
       polo = marco.start
       start(polo.host, polo.port)
+    end
+
+    def discover
+      advertise('')
     end
 
     def hear(event_name, &block)

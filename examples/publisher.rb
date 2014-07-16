@@ -6,17 +6,15 @@ require 'noam_lemma'
 # command should work:
 #
 #   ruby -Ilib example/publisher.rb
-#
-# This example _will not_ work on the same machine running the Noam server as
-# both programs need to bind to UDP port 1030.
 
 publisher = Noam::Lemma.new('example-publisher', [], ["e1", "e2"])
 
-# Using the `discover` method asks the Lemma to proactively try and discover a
-# server to connect to on the local network. Once the server is discovered, it
-# will connect and send a Noam 'register' message. When `discover` returns, the
-# Lemma is ready to send events.
-publisher.discover
+# Using the `advertise` method asks the Lemma to announce it's presence and
+# wait for a message from a server that may want to connect to it.
+#
+# The "local-test" parameter is the room name. Servers with a room name that's
+# the same as the Lemma's advertised room name will connect automatically.
+publisher.advertise("local-test")
 
 seq = 0
 loop do

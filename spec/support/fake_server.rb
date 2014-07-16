@@ -20,9 +20,6 @@ module NoamTest
       @thread = Thread.new do |t|
         begin
           loop do
-            msg = ["beacon", "fake_beacon", NoamTest::FakeServer::PORT].to_json
-            @socket.send(msg, 0, "255.255.255.255", Noam::BEACON_PORT)
-
             # This is normally at 5.0 seconds, but we run faster in order to
             # make tests faster.
             sleep(LOOP_DELAY)
@@ -105,7 +102,7 @@ module NoamTest
       @client_host = @sock.peeraddr[2]
       @queue = Queue.new
     end
-    
+
     def start
       @thread = Thread.new do |t|
         begin

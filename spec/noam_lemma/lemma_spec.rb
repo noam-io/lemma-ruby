@@ -49,10 +49,14 @@ describe Noam::Lemma do
 
   context "with server communication" do
     let(:server)  { FakeManager.server }
+    let(:lemma) { Noam::Lemma.new("Example Lemma") }
 
     before(:each) do
+      Noam::Message::Marco.any_instance.stubs(:start).returns(
+        Noam::Message::Polo.new('0.0.0.0', NoamTest::FakeServer::PORT)
+      )
       FakeManager.start
-      lemma.discover
+      lemma.advertise('fake_beacon')
       sleep(SERVER_DELAY)
     end
 
@@ -61,9 +65,7 @@ describe Noam::Lemma do
       FakeManager.stop
     end
 
-    describe "#discover" do
-      let(:lemma) { Noam::Lemma.new("Example Lemma") }
-
+    describe "#advertise" do
       it "sends a registration message" do
         server.clients.length.should == 1
         server.clients.first.port.should be_an(Integer)
@@ -77,8 +79,6 @@ describe Noam::Lemma do
     end
 
     describe "#hear" do
-      let(:lemma) { Noam::Lemma.new("Example Lemma") }
-
       it "registers messages with blocks" do
         message = nil
         lemma.hear("example_event") {|event| message = event}
@@ -89,12 +89,10 @@ describe Noam::Lemma do
     end
 
     describe "#speak" do
-      let(:lemma) { Noam::Lemma.new("Example Lemma") }
-
       it "sends a message to the server" do
         lemma.speak("an event", "some value")
         sleep(SERVER_DELAY)
-        server.messages.map {|m| m[2]}.include?("an event").should be_true
+        server.messages.map {|m| m[2]}.include?("an event").should be_truthy
       end
     end
 
