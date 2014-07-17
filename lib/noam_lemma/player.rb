@@ -20,13 +20,12 @@ module Noam
     end
 
     def stop
-      put(:soft_exit)
+      put(:exit)
       @thread.join
     end
 
     def stop!
-      put(:hard_exit)
-      @thread.join
+      @thread.exit
     end
 
     private
@@ -37,7 +36,7 @@ module Noam
           loop do
             message = @queue.pop
             break if exit?(message)
-            process(message)
+            print_message(message)
           end
         ensure
           @socket.close
@@ -45,34 +44,13 @@ module Noam
       end
     end
 
-    def process(message)
-      case message
-      when :soft_exit
-        finish_queue
-      when :hard_exit
-      else
-        @socket.print(message.noam_encode)
-        @socket.flush
-      end
+    def print_message(message)
+      @socket.print(message.noam_encode)
+      @socket.flush
     end
 
     def exit?(message)
-      message == :hard_exit || message == :soft_exit
-    end
-
-    def finish_queue
-      queue_to_array.each do |message|
-        @socket.print(message.noam_encode)
-        @socket.flush
-      end
-    end
-
-    def queue_to_array
-      result = []
-      while(@queue.size > 0) do
-        result << @queue.pop
-      end
-      result
+      message == :exit
     end
   end
 end
