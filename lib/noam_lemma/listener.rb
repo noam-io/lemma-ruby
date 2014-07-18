@@ -49,7 +49,7 @@ module Noam
 
     def listen_for_connection
       timeout_sec = 0.1
-      available_ios = select([@server], nil, nil, timeout_sec)
+      available_ios = IO.select([@server], nil, nil, timeout_sec)
       @server.accept if available_ios
     end
 
