@@ -21,6 +21,10 @@ module Noam
       @thread.join
     end
 
+    def connected?
+      !@disconnected
+    end
+
     private
 
     def manage_queue_on_thread
@@ -63,6 +67,8 @@ module Noam
         end
       rescue IO::WaitReadable
         retry unless exiting?
+      rescue EOFError
+        @disconnected = true
       end
     end
 

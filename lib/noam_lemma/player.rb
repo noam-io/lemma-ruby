@@ -28,6 +28,10 @@ module Noam
       @thread.exit
     end
 
+    def connected?
+      !@disconnected
+    end
+
     private
 
     def manage_queue_on_thread
@@ -38,6 +42,8 @@ module Noam
             break if exit?(message)
             print_message(message)
           end
+        rescue Errno::EPIPE
+          @disconnected = true
         ensure
           @socket.close
         end

@@ -31,12 +31,17 @@ loop do
 
   # Attempt to speak the chosen event with the value. Note, the event is either
   # "e1" or "e2" based on how rand() returned.
-  unless publisher.speak(e, v)
-    # If `speak` returns false, we're unable to speak the message likely because
-    # the socket has closed. The connection would have to be restarted.
-    puts "Done"
+  begin
+    publisher.speak(e, v)
+
+    # If `speak` returns a Noam::Disconnected error, we're unable to speak the
+    # message likely because the socket has closed. The connection
+    # would have to be restarted.
+  rescue Noam::Disconnected
+    puts "Disconnected"
     break
   end
+
   puts "Wrote: #{e} -> #{v.inspect}"
 
   seq += 1

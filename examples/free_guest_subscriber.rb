@@ -15,7 +15,12 @@ subscriber.discover
 loop do
   # The `listen` method will return an Event object once one is received by the
   # Lemma. Until an event is heard, the `listen` method blocks.
-  m = subscriber.listen
+  begin
+    m = subscriber.listen
+  rescue Noam::Disconnected
+    puts "Disconnected"
+    break
+  end
 
   # There's one special value that's returned from `listen`: the `:cancelled`
   # symbol. If this shows up, it means some one else has called the `stop`

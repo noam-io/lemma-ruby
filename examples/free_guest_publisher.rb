@@ -18,12 +18,15 @@ loop do
   # Construct a value to send with the event.
   v = {"seq" => seq, "time" => Time.now.to_s}
 
-  # If `speak` returns false, we're unable to speak the message likely because
+  # If `speak` raises a Noam::Disconnected error, we're unable to speak the message likely because
   # the socket has closed. The connection would have to be restarted.
-  unless publisher.speak(e, v)
-    puts "Done"
+  begin
+    publisher.speak(e, v)
+  rescue Noam::Disconnected
+    puts "Disconnectd"
     break
   end
+
   puts "Wrote: #{e} -> #{v.inspect}"
 
   seq += 1

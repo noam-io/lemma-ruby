@@ -27,14 +27,29 @@ describe Noam::Listener do
     IO.stubs(:select).returns(true)
   end
 
-  describe 'take' do
+  describe '#connected?' do
+    it 'returns true if the connection is open' do
+      mock_socket.queue << make_message('message')
+      listener.stop
+      expect(listener.connected?).to be_truthy
+    end
+
+    it 'returns false if a read has failed' do
+      mock_socket.stubs(:read_nonblock).raises(EOFError.new)
+      listener.stop
+      expect(listener.connected?).to be_falsey
+    end
+  end
+
+  describe '#take' do
     it 'returns the next message from the queue' do
       mock_socket.queue << make_message('message')
+      listener.stop
       expect(listener.take.value).to eq('message')
     end
   end
 
-  describe 'stop' do
+  describe '#stop' do
     it 'returns the cancelled signal at the end of the queue' do
       mock_socket.queue << make_message('message_1')
       mock_socket.queue << make_message('message_2')

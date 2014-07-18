@@ -81,7 +81,7 @@ describe Noam::Lemma do
     describe "#hear" do
       it "registers messages with blocks" do
         message = nil
-        lemma.hear("example_event") {|event| message = event}
+        lemma.hear("example_event") { |event| message = event }
         send_message_from_server("example_event")
         lemma.listen
         message.event.should == "example_event"
@@ -92,7 +92,12 @@ describe Noam::Lemma do
       it "sends a message to the server" do
         lemma.speak("an event", "some value")
         sleep(SERVER_DELAY)
-        server.messages.map {|m| m[2]}.include?("an event").should be_truthy
+        server.messages.map { |m| m[2] }.include?("an event").should be_truthy
+      end
+
+      it "raise a disconnected error if the player is not connected" do
+        lemma.player.stubs(:connected?).returns(false)
+        expect { lemma.speak('event', 'value') }.to raise_error(Noam::Disconnected)
       end
     end
 
@@ -105,6 +110,11 @@ describe Noam::Lemma do
         message.source.should == "test-server"
         message.event.should  == "example_event"
         message.value.should  == "noam event"
+      end
+
+      it "raises a disconnected error if the listener is not connected" do
+        lemma.listener.stubs(:connected?).returns(false)
+        expect { lemma.listen }.to raise_error(Noam::Disconnected)
       end
     end
 

@@ -24,6 +24,20 @@ describe Noam::Player do
     TCPSocket.stubs(:new).returns(mock_socket)
   end
 
+  describe "connected?" do
+    it "returns true if the socket is open" do
+      player.stop
+      expect(player.connected?).to be_truthy
+    end
+
+    it "returns false if a write to the socket has failed" do
+      mock_socket.stubs(:print).raises(Errno::EPIPE.new)
+      player.put(make_message("message"))
+      player.stop
+      expect(player.connected?).to be_falsey
+    end
+  end
+
   describe "stop" do
     it "publishes the remaning messages in the queue" do
       100.times do

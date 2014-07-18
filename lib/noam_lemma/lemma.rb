@@ -28,16 +28,20 @@ module Noam
     end
 
     def speak(event, value)
-      if @player
+      if @player.connected?
         @player.put(Noam::Message::Playable.new(@name, event, value))
         true
       else
-        false
+        raise Noam::Disconnected.new("Player disconnected")
       end
     end
 
     def listen
-      @message_filter.receive(@listener.take)
+      if @listener.connected?
+        @message_filter.receive(@listener.take)
+      else
+        raise Noam::Disconnected.new("Listener disconnected")
+      end
     end
 
     def stop

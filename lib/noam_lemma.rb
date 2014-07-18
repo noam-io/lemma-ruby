@@ -7,6 +7,7 @@ module Noam
   DEVICE_TYPE = 'ruby-script'
 
   class NoamThreadCancelled < Exception; end
+  class Disconnected < StandardError; end
 end
 
 require 'noam_lemma/lemma'
