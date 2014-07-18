@@ -7,28 +7,27 @@ require 'noam_lemma'
 
 subscriber = Noam::Lemma.new('example-guest-subscriber', ["e3"], [])
 
+# The `hear` method sets a a block of code to be called when an event is heard
+# from a specific event.
+subscriber.hear('e3') do |message|
+  puts "Heard message"
+  puts "Event: #{message.event}"
+  puts "Value: #{message.value.inspect}"
+end
+
 # Using the `discover` method asks the Lemma to announce it's presence and
 # wait for a message from a server that may want to connect to it.
 
 subscriber.discover
 
 loop do
-  # The `listen` method will return an Event object once one is received by the
+  # The `listen` method will return an Message::Heard object once one is received by the
   # Lemma. Until an event is heard, the `listen` method blocks.
   begin
     m = subscriber.listen
+    puts "Read: #{m.event} -> #{m.value.inspect}"
   rescue Noam::Disconnected
     puts "Disconnected"
     break
-  end
-
-  # There's one special value that's returned from `listen`: the `:cancelled`
-  # symbol. If this shows up, it means some one else has called the `stop`
-  # method on the Lemma.
-  if :cancelled == m
-    puts "Done"
-    break
-  else
-    puts "Read: #{m.event} -> #{m.value.inspect}"
   end
 end

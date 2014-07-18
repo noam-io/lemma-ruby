@@ -44,10 +44,7 @@ module Noam
           client.close
         end
 
-        if exiting?
-          @queue.push(:cancelled)
-          break
-        end
+        break if exiting?
       end
     end
 

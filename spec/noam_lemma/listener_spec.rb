@@ -48,15 +48,4 @@ describe Noam::Listener do
       expect(listener.take.value).to eq('message')
     end
   end
-
-  describe '#stop' do
-    it 'returns the cancelled signal at the end of the queue' do
-      mock_socket.queue << make_message('message_1')
-      mock_socket.queue << make_message('message_2')
-      mock_socket.queue << make_message('message_3')
-      listener.stop
-      message = listener.take until message == :cancelled
-      expect(message).to eq(:cancelled)
-    end
-  end
 end
