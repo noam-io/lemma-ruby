@@ -1,6 +1,8 @@
 noam\_lemma
 ===============
 
+[![Build Status](https://travis-ci.org/noam-io/lemma-ruby.svg?branch=0.2.1.3)](https://travis-ci.org/noam-io/lemma-ruby)
+
 A Noam Lemma implementation for Ruby.
 
 This library exposes the fundamental concepts in a Lemma to Ruby developers. It
