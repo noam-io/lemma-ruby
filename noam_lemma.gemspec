@@ -21,6 +21,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "require_all"
   spec.add_development_dependency "bundler", "~>  1.3"
   spec.add_development_dependency "rake",    "~> 10.3"
-  spec.add_development_dependency "rspec",   "~>  2.14"
+  spec.add_development_dependency "rspec",   "~>  3.1.0"
   spec.add_development_dependency "mocha",   "~>  1.1"
 end
