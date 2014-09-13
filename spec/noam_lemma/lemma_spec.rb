@@ -6,15 +6,15 @@ describe Noam::Lemma do
       let(:lemma) { Noam::Lemma.new("Example Lemma", ["example_event"], ["sample_event"]) }
 
       it "sets #name to the given name" do
-        lemma.name.should  == "Example Lemma"
+        expect(lemma.name).to eq("Example Lemma")
       end
 
       it "sets #hears to the given hears" do
-        lemma.hears.should == ["example_event"]
+        expect(lemma.hears).to eq(["example_event"])
       end
 
       it "sets #speaks to the given speaks" do
-        lemma.speaks.should == ["sample_event"]
+        expect(lemma.speaks).to eq(["sample_event"])
       end
     end
 
@@ -22,11 +22,11 @@ describe Noam::Lemma do
       let(:lemma) { Noam::Lemma.new("Example Lemma") }
 
       it "sets #hears to an empty array" do
-        lemma.hears.should == []
+        expect(lemma.hears).to eq([])
       end
 
       it "sets #speaks to an empty array" do
-        lemma.speaks.should == []
+        expect(lemma.speaks).to eq([])
       end
     end
   end
@@ -37,13 +37,13 @@ describe Noam::Lemma do
     it "is all messages hearable to the Lemma" do
       lemma.hear("example_event") {}
       lemma.hear("sample_event") {}
-      lemma.hears.should == ["example_event", "sample_event"]
+      expect(lemma.hears).to eq(["example_event", "sample_event"])
     end
 
     it "does not contain duplicate messages" do
       lemma.hear("example_event") {}
       lemma.hear("example_event") {}
-      lemma.hears.should == ["example_event"]
+      expect(lemma.hears).to eq(["example_event"])
     end
   end
 
@@ -67,14 +67,14 @@ describe Noam::Lemma do
 
     describe "#advertise" do
       it "sends a registration message" do
-        server.clients.length.should == 1
-        server.clients.first.port.should be_an(Integer)
-        server.clients.first.port.should_not == 0
+        expect(server.clients.length).to eq(1)
+        expect(server.clients.first.port).to be_an(Integer)
+        expect(server.clients.first.port).to_not eq(0)
       end
 
       it "initializes listener and player" do
-        lemma.listener.should_not be_nil
-        lemma.player.should_not be_nil
+        expect(lemma.listener).to_not be_nil
+        expect(lemma.player).to_not be_nil
       end
     end
 
@@ -84,7 +84,7 @@ describe Noam::Lemma do
         lemma.hear("example_event") { |event| message = event }
         send_message_from_server("example_event")
         lemma.listen
-        message.event.should == "example_event"
+        expect(message.event).to eq("example_event")
       end
     end
 
@@ -92,7 +92,9 @@ describe Noam::Lemma do
       it "sends a message to the server" do
         lemma.speak("an event", "some value")
         sleep(SERVER_DELAY)
-        server.messages.map { |m| m[2] }.include?("an event").should be_truthy
+        expect(
+          server.messages.map { |m| m[2] }.include?("an event")
+        ).to be_truthy
       end
 
       it "raise a disconnected error if the player is not connected" do
@@ -107,9 +109,9 @@ describe Noam::Lemma do
       it "returns a message from the server" do
         send_message_from_server("example_event")
         message = lemma.listen
-        message.source.should == "test-server"
-        message.event.should  == "example_event"
-        message.value.should  == "noam event"
+        expect(message.source).to eq("test-server")
+        expect(message.event).to eq("example_event")
+        expect(message.value).to eq("noam event")
       end
 
       it "raises a disconnected error if the listener is not connected" do
