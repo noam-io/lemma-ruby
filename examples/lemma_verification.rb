@@ -89,4 +89,6 @@ class Noam::LemmaVerification
   end
 end
 
-Noam::LemmaVerification.run
+if __FILE__==$0
+  Noam::LemmaVerification.run
+end
