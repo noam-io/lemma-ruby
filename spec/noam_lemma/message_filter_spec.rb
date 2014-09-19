@@ -6,7 +6,7 @@ describe Noam::MessageFilter do
     it "registers event names with the filter" do
       filter.hear("example_event") {}
       filter.hear("sample_event") {}
-      filter.hears.should == ["example_event", "sample_event"]
+      expect(filter.hears).to eq(["example_event", "sample_event"])
     end
   end
 
@@ -14,7 +14,7 @@ describe Noam::MessageFilter do
     it "includes single entries for event names registered multiple times" do
       filter.hear("example_event") {}
       filter.hear("example_event") {}
-      filter.hears.should == ["example_event"]
+      expect(filter.hears).to eq(["example_event"])
     end
   end
 
@@ -23,7 +23,7 @@ describe Noam::MessageFilter do
       messages_received = 0
       filter.hear("example_event") {|message| messages_received += 1}
       filter.receive(message)
-      messages_received.should == 1
+      expect(messages_received).to eq(1)
     end
 
     it "calls multiple blocks associated with the given event name" do
@@ -31,8 +31,8 @@ describe Noam::MessageFilter do
       filter.hear("example_event") {|message| message_one = message}
       filter.hear("example_event") {|message| message_two = message}
       filter.receive(message)
-      message_one.should be(message)
-      message_two.should be(message)
+      expect(message_one).to eq(message)
+      expect(message_two).to eq(message)
     end
 
     it "ignores blocks associated with other event names" do
@@ -40,25 +40,29 @@ describe Noam::MessageFilter do
       filter.hear("example_event") {|message| example_received = true}
       filter.hear("sample_event") {|message| sample_received = true}
       filter.receive(stub_message("example_event"))
-      example_received.should be_truthy
-      sample_received.should be_falsy
+      expect(example_received).to be_truthy
+      expect(sample_received).to be_falsy
     end
 
     it "returns the given message" do
       message = stub_message("example_event")
       result = filter.receive(message)
-      result.should be(message)
+      expect(result).to eq(message)
     end
 
     it "ignores event names with no associations" do
       message = stub_message("example_event")
-      lambda { filter.receive(message) }.should_not raise_error
+      expect(
+        lambda { filter.receive(message) }
+      ).to_not raise_error
     end
 
     it "ignores event names with empty blocks" do
       message = stub_message("example_event")
       filter.hear("example_event") {}
-      lambda { filter.receive(message) }.should_not raise_error
+      expect(
+        lambda { filter.receive(message) }
+      ).to_not raise_error
     end
   end
 
