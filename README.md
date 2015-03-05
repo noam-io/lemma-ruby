@@ -1,7 +1,7 @@
 noam\_lemma
 ===============
 
-[![Build Status](https://travis-ci.org/noam-io/lemma-ruby.svg?branch=0.2.1.3)](https://travis-ci.org/noam-io/lemma-ruby)
+[![Build Status](https://api.travis-ci.org/noam-io/lemma-ruby.svg?branch=master)](https://travis-ci.org/noam-io/lemma-ruby)
 
 A Noam Lemma implementation for Ruby.
 
